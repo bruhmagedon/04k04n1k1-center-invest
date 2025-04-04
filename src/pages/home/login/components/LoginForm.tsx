@@ -39,11 +39,11 @@ export function LoginForm() {
       password: ''
     }
   });
-  useEffect(() => {
-    if (localStorage.getItem('token-storage')) {
-      navigate('/');
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (localStorage.getItem('token-storage')) {
+  //     navigate('/');
+  //   }
+  // }, []);
   const onSubmit = (data: z.infer<typeof loginSchema>) => {
     mutate(data, {
       onSuccess: () => {
@@ -59,7 +59,7 @@ export function LoginForm() {
   };
 
   return (
-    <div className='flex justify-center items-center   w-1/3'>
+    <div className='flex justify-center items-center   w-1/3 min-w-[21.5rem]'>
       <MagicCard className='w-full p-5 rounded-xl' gradientColor={theme === 'dark' ? '#262626' : '#D9D9D955'}>
         <Form {...form}>
           <form className=' space-y-6' onSubmit={form.handleSubmit(onSubmit)}>

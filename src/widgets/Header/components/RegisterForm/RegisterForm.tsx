@@ -1,64 +1,61 @@
-import type { z } from 'zod';
+// src/modules/auth/ui/RegisterForm/RegisterForm.tsx
+"use client"
 
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import { Link, useNavigate } from 'react-router';
-import { toast } from 'sonner';
+import { zodResolver } from "@hookform/resolvers/zod"
+import { Eye, EyeOff } from "lucide-react"
+import { useState } from "react"
+import { useForm } from "react-hook-form"
+import { z } from "zod"
 
-import { homeRoutes } from '@/app/router/routesConfig';
-import { useRegisterMutation } from '@/modules/auth/model/hooks/useRegisterMutation';
-import { useTheme } from '@/shared/hooks/useTheme';
-import { Button } from '@/shared/ui/button';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/shared/ui/form';
-import { Input } from '@/shared/ui/input';
-import { Loader } from '@/shared/ui/loader';
-import { MagicCard } from '@/shared/ui/magic-card';
+import { useRegisterMutation } from "@/modules/auth/model/hooks/useRegisterMutation"
+import { Button } from "@/shared/ui/button"
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/shared/ui/form"
+import { Input } from "@/shared/ui/input"
+import { Loader } from "@/shared/ui/loader"
+import { toast } from "sonner"
+import { usePasswordVisible } from "@/widgets/Header/components/RegisterForm/utils/useChangeVisible"
 
-import { usePasswordVisible } from '../../../../../widgets/Header/components/RegisterForm/utils/useChangeVisible';
-import { registerSchema } from './registerSchema';
+const registerSchema = z.object({
+  username: z.string().min(2),
+  email: z.string().email(),
+  password: z.string().min(6),
+  confirmPassword: z.string().min(6),
+})
 
-export function RegisterForm() {
-  const { theme } = useTheme();
-  const navigate = useNavigate();
+export function RegisterForm({ onSuccess }: { onSuccess?: () => void }) {
+  const { mutate, isPending } = useRegisterMutation()
   const { visibleButton, inputType } = usePasswordVisible();
-  // const { accessToken } = useTokenStore();
-
-  const { mutate, isPending } = useRegisterMutation();
 
   const form = useForm<z.infer<typeof registerSchema>>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
-      username: '',
-      email: '',
-      password: '',
-      confirmPassword: ''
+      username: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+    },
+  })
+
+  const onSubmit = (data: z.infer<typeof registerSchema>) => {
+    if (data.password !== data.confirmPassword) {
+      toast.error("Пароли не совпадают")
+      return
     }
-  });
 
-  // useEffect(() => {
-  //   if (accessToken) {
-  //     navigate('/');
-  //   }
-  // }, []);
-
-  const onSubmit = ({ confirmPassword, ...restData }: z.infer<typeof registerSchema>) => {
-    mutate(restData, {
+    mutate(data, {
       onSuccess: () => {
-        form.reset();
-        toast.success('Успешная регистрация');
-
-        navigate('/');
+        form.reset()
+        toast.success("Успешная регистрация")
+        onSuccess?.()
       },
       onError: (error) => {
-        toast.error('Oшибка регистрации', { description: error.response?.data.detail });
-      }
-    });
-  };
+        toast.error("Ошибка регистрации", { description: error.response?.data.detail })
+      },
+    })
+  }
 
   return (
-    <div className='flex justify-center items-center   w-1/3 min-w-[21.5rem]'>
-      <MagicCard className='w-full p-5 rounded-xl' gradientColor={theme === 'dark' ? '#262626' : '#D9D9D955'}>
-        <Form {...form}>
+    <Form {...form}>
           <form className=' space-y-6' onSubmit={form.handleSubmit(onSubmit)}>
             <FormField
               render={({ field }) => (
@@ -122,13 +119,9 @@ export function RegisterForm() {
               <Button className='min-w-28.5' disabled={isPending} type='submit'>
                 {isPending ? <Loader className='w-4 h-4' /> : 'Регистрация'}
               </Button>
-              <Link to={homeRoutes.login.path}>
-                <Button>Вход</Button>
-              </Link>
+              
             </div>
           </form>
         </Form>
-      </MagicCard>
-    </div>
-  );
+  )
 }
