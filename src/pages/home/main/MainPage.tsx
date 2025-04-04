@@ -22,9 +22,9 @@ const _MainPage = () => {
 
   return (
     <main className='flex flex-1 flex-col gap-12 px-6 sm:px-16 w-full h-full  items-center min-h-[calc(100vh-160px)] mt-16 overflow-hidden'>
-      <NpaModal/>
+      <NpaModal />
       <div className='relative w-full rounded-[0.375rem]'>
-        <BlockNoteView className='w-full ' theme={theme} editor={editor} />
+        <BlockNoteView className='w-full' theme={theme as Theme} editor={editor} />
         <BorderBeam
           duration={20}
           size={900}

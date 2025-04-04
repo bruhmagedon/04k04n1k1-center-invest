@@ -13,5 +13,5 @@ export const useGetUserQuery = () => {
     queryKey: ['user'],
     queryFn: getUser,
     enabled: !!accessToken
- });
+  });
 };

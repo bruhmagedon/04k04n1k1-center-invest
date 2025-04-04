@@ -1,58 +1,32 @@
 // AuthDialog.tsx
-import { useTheme } from "@/shared/hooks/useTheme";
-import { Button } from "@/shared/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/shared/ui/dialog";
-import { MagicCard } from "@/shared/ui/magic-card";
-import React, { Dispatch, SetStateAction, useEffect, createContext, ReactNode, useState, useContext } from "react";
+import { useTheme } from '@/shared/hooks/useTheme';
+import { Button } from '@/shared/ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/shared/ui/dialog';
+import { MagicCard } from '@/shared/ui/magic-card';
+import { ReactNode } from 'react';
 
 interface AuthDialogProps {
   triggerText: string;
   title: string;
   children: ReactNode;
-}
-
-interface ModalContextType {
   isOpen: boolean;
-  setIsOpen: Dispatch<SetStateAction<boolean>>;
+  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const ModalContext = createContext<ModalContextType>({
-  isOpen: false,
-  setIsOpen: () => {},
-});
-
-export const useModalContext = () => {
-  return useContext(ModalContext);
-};
-
-export const AllDialog = ({
-  triggerText,
-  title,
-  children,
-}: AuthDialogProps) => {
-  const [isOpen, setIsOpen] = useState(false);
+export const AllDialog = ({ triggerText, title, children, isOpen, setIsOpen }: AuthDialogProps) => {
   const { theme } = useTheme();
-  
-  useEffect(() => {
-    console.log("Dialog state changed:", isOpen);
-  }, [isOpen]);
 
   return (
-    <ModalContext.Provider value={{ isOpen, setIsOpen }}>
-      <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <Button onClick={() => setIsOpen(true)}>
-          {triggerText}
-        </Button>
-        
-        <DialogContent className="sm:max-w-[425px] p-0">
-          <MagicCard className='w-full p-5 rounded-lg' gradientColor={theme === 'dark' ? '#000' : '#fff'}> 
-            <DialogHeader>
-              <DialogTitle className="mb-4">{title}</DialogTitle>
-            </DialogHeader>
-            {children}
-          </MagicCard>
-        </DialogContent>
-      </Dialog>
-    </ModalContext.Provider>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <Button onClick={() => setIsOpen(true)}>{triggerText}</Button>
+      <DialogContent className='sm:max-w-[425px] p-0'>
+        <MagicCard className='w-full p-5 rounded-lg' gradientColor={theme === 'dark' ? '#000' : '#fff'}>
+          <DialogHeader>
+            <DialogTitle className='mb-4'>{title}</DialogTitle>
+          </DialogHeader>
+          {children}
+        </MagicCard>
+      </DialogContent>
+    </Dialog>
   );
 };
