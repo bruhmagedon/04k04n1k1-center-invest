@@ -37,13 +37,12 @@ export function LoginForm() {
     defaultValues: {
       email: '',
       password: ''
-
     }
   });
   useEffect(() => {
-      if (localStorage.getItem('token-storage')) {
-        navigate('/');
-      }
+    if (localStorage.getItem('token-storage')) {
+      navigate('/');
+    }
   }, []);
   const onSubmit = (data: z.infer<typeof loginSchema>) => {
     mutate(data, {
@@ -106,20 +105,19 @@ export function LoginForm() {
                 </FormItem>
               )}
               name='password'
-
               control={form.control}
             />
             <div className='flex gap-2'>
-             <Button className='min-w-28.5' disabled={isPending} type='submit'>
+              <Button className='min-w-28.5' disabled={isPending} type='submit'>
                 {isPending ? <Loader className='w-4 h-4' /> : 'Вход'}
               </Button>
-              <Link to={register.path}><Button>Регистрация</Button></Link>
+              <Link to={register.path}>
+                <Button>Регистрация</Button>
+              </Link>
             </div>
-
           </form>
         </Form>
       </MagicCard>
     </div>
-
   );
 }

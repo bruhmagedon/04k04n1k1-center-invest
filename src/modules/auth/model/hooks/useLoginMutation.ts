@@ -1,5 +1,3 @@
-
-
 import { useMutation } from '@tanstack/react-query';
 
 import type { IAuthResponse, LoginCredentials } from '@/modules/auth/model/types/api';

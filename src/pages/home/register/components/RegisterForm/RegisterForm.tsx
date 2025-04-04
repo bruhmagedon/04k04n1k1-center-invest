@@ -122,12 +122,13 @@ export function RegisterForm() {
               <Button className='min-w-28.5' disabled={isPending} type='submit'>
                 {isPending ? <Loader className='w-4 h-4' /> : 'Регистрация'}
               </Button>
-              <Link to={homeRoutes.login.path}><Button>Вход</Button></Link>
+              <Link to={homeRoutes.login.path}>
+                <Button>Вход</Button>
+              </Link>
             </div>
           </form>
         </Form>
       </MagicCard>
     </div>
-
   );
 }

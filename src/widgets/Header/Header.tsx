@@ -20,7 +20,6 @@ export const Header = () => {
           <Button>Регистрация</Button>
         </Link>
       </div>
-
     </header>
   );
 };

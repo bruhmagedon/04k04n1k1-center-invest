@@ -5,7 +5,7 @@ import { Navigate, Outlet } from 'react-router-dom';
 import { Loader } from '@/shared/ui/loader';
 
 export const ProtectedRoute = () => {
-//   const { isAuthorized } = useProfileUser(true);
+  //   const { isAuthorized } = useProfileUser(true);
   const { isAuthorized } = { isAuthorized: true };
 
   // Если статус авторизации еще не известен (например, в момент начала приложения),

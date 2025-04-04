@@ -5,7 +5,7 @@ export default antfu(
   {
     typescript: true,
     react: true,
-    stylistic: true,
+    stylistic: false,
     formatters: {
       css: true,
       html: true
@@ -22,8 +22,7 @@ export default antfu(
       'react-hooks/exhaustive-deps': 'off',
       'test/prefer-lowercase-title': 'off',
       'unused-imports/no-unused-vars': 'warn',
-      'eslint linebreak-style': ["error", "windows"]
-      
+      'eslint linebreak-style': ["error", "windows"] 
     }
   },
   {

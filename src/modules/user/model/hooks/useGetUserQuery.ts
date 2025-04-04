@@ -10,7 +10,7 @@ export const useGetUserQuery = () => {
     query: useQuery({
       queryKey,
       queryFn: () => getUser()
-    //   ...settings?.options
+      //   ...settings?.options
     }),
     queryKey
   };

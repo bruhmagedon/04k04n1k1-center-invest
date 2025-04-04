@@ -76,10 +76,7 @@ export function MagicCard({
   }, [gradientSize, mouseX, mouseY]);
 
   return (
-    <div
-      ref={cardRef}
-      className={cn('group relative rounded-[inherit]', className)}
-    >
+    <div ref={cardRef} className={cn('group relative rounded-[inherit]', className)}>
       <motion.div
         style={{
           background: useMotionTemplate`
