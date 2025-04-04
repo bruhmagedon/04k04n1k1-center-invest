@@ -2,9 +2,9 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Eye, EyeOff } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
@@ -14,8 +14,10 @@ import { Button } from '@/shared/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/shared/ui/form';
 import { Input } from '@/shared/ui/input';
 import { MagicCard } from '@/shared/ui/magic-card';
+import { useLoginMutation } from '@/modules/auth/model/hooks/useLoginMutation';
+import { Loader } from '@/shared/ui/loader';
 
-const FormSchema = z.object({
+const loginSchema = z.object({
   email: z.string().email({
     message: 'Поле должно быть имейлом, например 222@gmail.com'
   }),
@@ -26,26 +28,36 @@ const FormSchema = z.object({
 export function LoginForm() {
   const { theme } = useTheme();
   const { register } = homeRoutes;
+  const { mutate, isPending } = useLoginMutation();
+  const navigate = useNavigate();
   const [isVisible, setIsVisible] = useState<boolean>(false);
   const toggleVisibility = () => setIsVisible((prevState) => !prevState);
-  const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
+  const form = useForm<z.infer<typeof loginSchema>>({
+    resolver: zodResolver(loginSchema),
     defaultValues: {
       email: '',
       password: ''
 
     }
   });
+  useEffect(() => {
+      if (localStorage.getItem('token-storage')) {
+        navigate('/');
+      }
+  }, []);
+  const onSubmit = (data: z.infer<typeof loginSchema>) => {
+    mutate(data, {
+      onSuccess: () => {
+        form.reset();
+        toast.success('Успешная регистрация');
 
-  function onSubmit(data: z.infer<typeof FormSchema>) {
-    toast('Event has been created', {
-      description: 'Sunday, December 03, 2023 at 9:00 AM',
-      action: {
-        label: 'Undo',
-        onClick: () => console.log('Undo')
+        navigate('/');
+      },
+      onError: (error) => {
+        toast.error('Oшибка регистрации', { description: error.response?.data.detail });
       }
     });
-  }
+  };
 
   return (
     <div className='flex justify-center items-center   w-1/3'>
@@ -98,7 +110,9 @@ export function LoginForm() {
               control={form.control}
             />
             <div className='flex gap-2'>
-              <Button type='submit'>Вход</Button>
+             <Button className='min-w-28.5' disabled={isPending} type='submit'>
+                {isPending ? <Loader className='w-4 h-4' /> : 'Вход'}
+              </Button>
               <Link to={register.path}><Button>Регистрация</Button></Link>
             </div>
 

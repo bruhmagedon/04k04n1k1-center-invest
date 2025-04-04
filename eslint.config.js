@@ -21,7 +21,9 @@ export default antfu(
       'no-console': 'warn',
       'react-hooks/exhaustive-deps': 'off',
       'test/prefer-lowercase-title': 'off',
-      'unused-imports/no-unused-vars': 'warn'
+      'unused-imports/no-unused-vars': 'warn',
+      'eslint linebreak-style': ["error", "windows"]
+      
     }
   },
   {

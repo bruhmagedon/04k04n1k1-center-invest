@@ -32,7 +32,7 @@ export default defineConfig({
     cors: true,
     proxy: {
       '/api': {
-        target: 'http://178.253.55.179/',
+        target: 'http://103.71.23.62/',
         changeOrigin: true
       }
     }

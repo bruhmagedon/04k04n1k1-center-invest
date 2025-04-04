@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 
 import { createContext, useLayoutEffect, useState } from 'react';
 
-type Theme = 'dark' | 'light' | 'system';
+export type Theme = 'dark' | 'light' | 'system';
 
 interface ThemeProviderProps {
   children: ReactNode;

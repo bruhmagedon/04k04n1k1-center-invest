@@ -4,7 +4,7 @@ import type { IAuthResponse, LoginCredentials } from '../types/api';
 
 export const login = async (credentials: LoginCredentials): Promise<IAuthResponse> => {
   const response = await api.post<IAuthResponse>(
-    `/auth/login`,
+    `/auth/login/`,
     {
       ...credentials
     }
