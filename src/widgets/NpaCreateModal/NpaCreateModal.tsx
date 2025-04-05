@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
 import { toast } from 'sonner';
+import mammoth from 'mammoth';
 
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/shared/ui/form';
 import { Input } from '@/shared/ui/input';
@@ -24,6 +25,7 @@ export function NpaCreateModal() {
   const [isUploading, setIsUploading] = useState(false);
   const [fileName, setFileName] = useState<string | null>(null);
   const [fileObject, setFileObject] = useState<File | null>(null);
+  const [extractedText, setExtractedText] = useState<string | null>(null);
   const { accessToken } = useTokenStore();
   
   const { mutate, isPending } = useCreateNpaMutation();
@@ -43,21 +45,31 @@ export function NpaCreateModal() {
     try {
       setIsUploading(true);
       setFileName(file.name);
-      setFileObject(file);
       
-      toast.success('Файл успешно загружен');
+  
+      const arrayBuffer = await file.arrayBuffer();
+      const result = await mammoth.extractRawText({ arrayBuffer });
+      const text = result.value;
+      setExtractedText(text);
+  
+      const textBlob = new Blob([text], { type: 'text/plain' });
+      const textFile = new File([textBlob], `${file.name.split('.')[0]}.txt`, { type: 'text/plain' });
+      setFileObject(textFile);
+      console.log(textFile)
+      toast.success('Файл успешно загружен и преобразован в текст');
     } catch (error) {
       console.error('Ошибка при обработке файла:', error);
       toast.error('Ошибка при обработке файла');
       setFileName(null);
       setFileObject(null);
+      setExtractedText(null);
     } finally {
       setIsUploading(false);
     }
   };
 
   const handleSubmit = (data: FormValues) => {
-    if (!fileObject) {
+    if (!fileObject || !extractedText) {
       toast.error('Необходимо загрузить файл');
       return;
     }
@@ -85,8 +97,10 @@ export function NpaCreateModal() {
           form.reset();
           setFileName(null);
           setFileObject(null);
+          setExtractedText(null);
         },
         onError: (error) => {
+            console.log(fileObject)
           toast.error('Ошибка при создании НПА', { 
             description: error.response?.data?.detail || 'Проверьте введенные данные'
           });
@@ -144,6 +158,7 @@ export function NpaCreateModal() {
                 {fileName && (
                   <div className="text-sm text-muted-foreground bg-muted/30 p-2 rounded">
                     Загружен файл: {fileName}
+                    {extractedText && <div className="mt-1 text-xs">Преобразован в текстовый формат</div>}
                   </div>
                 )}
               </div>
