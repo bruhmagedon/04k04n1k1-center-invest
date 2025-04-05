@@ -22,7 +22,6 @@ const _MainPage = () => {
     }
   });
 
-
   useEffect(() => {
  
     if (fileInputRef.current && editor) {
@@ -43,7 +42,7 @@ const _MainPage = () => {
         accept='.docx'
         style={{ display: 'none' }}
       />
-      <FunctionalPanel theme={theme} />
+      <FunctionalPanel theme={theme}  />
     </main>
   );
 };

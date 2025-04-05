@@ -1,11 +1,12 @@
 import { Button } from '@/shared/ui/button';
 import { cn } from '@/shared/utils/cn';
 import { NpaModal } from '@/widgets/NpaModal/NpaModal';
-import { handleDocxImport, handleExportPDF } from '../utils/documentHandlers';
+import { handleCheked, handleDocxImport, handleExportPDF } from '../utils/documentHandlers';
 import { useProfileUser } from '@/shared/hooks/useProfileUser';
 // Fix the import path to match your actual SVG location
 import DocxIcon from '@/shared/assets/icons/docx.svg?react';
 import PdfIcon from '@/shared/assets/icons/pdf.svg?react';
+import { useSearchNpaMutation } from '@/modules/npa/model/hooks/useSearchNpaMutation';
 
 interface FunctionalPanelProps {
   theme: string;
@@ -13,7 +14,7 @@ interface FunctionalPanelProps {
 
 export const FunctionalPanel = ({ theme }: FunctionalPanelProps) => {
   const { isAuthorized } = useProfileUser();
-
+  const { mutate: searchNpa } = useSearchNpaMutation();
   return (
     <div
       style={{
@@ -35,7 +36,7 @@ export const FunctionalPanel = ({ theme }: FunctionalPanelProps) => {
       <Button className='rounded-md' onClick={handleDocxImport} postfix={<DocxIcon className='size-8' />}>
         Импорт из
       </Button>
-      {isAuthorized && <Button className='rounded-md'>Определить подходящие НПА</Button>}
+      {isAuthorized && <Button className='rounded-md' onClick={() => handleCheked(searchNpa)}>Определить подходящие НПА</Button>}
       {isAuthorized && <NpaModal />}
       <Button onClick={handleExportPDF} className='rounded-md' postfix={<PdfIcon className='size-8' />}>
         Экспорт в

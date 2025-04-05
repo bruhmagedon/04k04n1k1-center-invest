@@ -4,6 +4,10 @@ import * as ReactPDF from '@react-pdf/renderer';
 import mammoth from 'mammoth';
 import { toast } from 'sonner';
 import { RefObject } from 'react';
+import { useSearchNpaMutation } from '@/modules/npa/model/hooks/useSearchNpaMutation';
+import { UseMutateFunction } from '@tanstack/react-query';
+import { NpaSearchResponse } from '@/modules/npa/model/api/searchNpa';
+import { newAxiosError } from '@/shared/api/types';
 
 let fileInputRef: RefObject<HTMLInputElement> | null = null;
 
@@ -12,17 +16,50 @@ let editorRef: BlockNoteEditor | null = null;
 export const setReferences = (inputRef: RefObject<HTMLInputElement>, editor: BlockNoteEditor) => {
   fileInputRef = inputRef;
   editorRef = editor;
-  // console.log('References set:', { fileInputRef, editorRef });
+
 };
 
 export const handleDocxImport = () => {
-  // console.log('Import DOCX clicked, fileInputRef:', fileInputRef);
+  
   if (fileInputRef?.current) {
     fileInputRef.current.click();
   } else {
-    // console.error('File input reference is not available');
+
   }
 };
+
+export const handleCheked = async (searchNpa: UseMutateFunction<NpaSearchResponse, newAxiosError, string, unknown>): Promise<File | null> => {
+    if (!editorRef) {
+      toast.error('Редактор не инициализирован');
+      return null;
+    }
+    
+    try {
+ 
+      const markdownContent = await editorRef.blocksToMarkdownLossy(editorRef.document);
+    
+      const markdownBlob = new Blob([markdownContent], { type: 'text/markdown' });
+      const markdownFile = new File([markdownBlob], 'document.md', { type: 'text/markdown' });
+      
+      searchNpa(markdownContent, {
+        onSuccess: (data) => {
+          console.log('Search NPA success:', data);
+          toast.success(`Найдено ${data.total} подходящих НПА`);
+        },
+        onError: (error) => {
+          console.error('Search NPA error:', error);
+          toast.error('Ошибка при поиске НПА', {
+            description: error.response?.data?.detail || 'Проверьте подключение к серверу'
+          });
+        }
+      });
+      return markdownFile;
+    } catch (error) {
+      console.error('Error converting to markdown:', error);
+      toast.error('Ошибка при конвертации в Markdown');
+      return null;
+    }
+  };
 
 export const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
   // console.log('File change event triggered, editorRef:', editorRef);
@@ -41,6 +78,7 @@ export const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement
     const blocksFromHTML = await editorRef.tryParseHTMLToBlocks(result.value);
     editorRef.replaceBlocks(editorRef.document, blocksFromHTML);
 
+    
     if (fileInputRef?.current) {
       fileInputRef.current.value = '';
     }
