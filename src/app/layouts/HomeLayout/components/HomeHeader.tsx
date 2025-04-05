@@ -1,25 +1,30 @@
 import { Button } from "@/shared/ui/button"
 import { TabsList, TabsTrigger } from "@/shared/ui/tabs"
 import { NpaModal } from "@/widgets/NpaModal/NpaModal"
-import { CircleUserRound, Copy, SquarePlus } from "lucide-react"
+import { ThemeSwitcher } from "@/widgets/ThemeSwitcher/ThemeSwitcher"
+import { CircleUserRound, Copy, Notebook, SquarePlus } from "lucide-react"
 
 export const HomeHeader = () => {
     return (
         <header className='flex justify-between items-center h-15 px-7.5'>
-          <div className='flex gap-2.5'>
-            <Button className='flex items-center p-2.5' prefix={ <SquarePlus size={16} />}><span>Создать ТЗ</span></Button>
-            <NpaModal /> 
-          </div>
-          
-          <TabsList className='flex'>
-            <TabsTrigger value="Редактор">Редактор</TabsTrigger>
-            <TabsTrigger value="Проверка">Проверка</TabsTrigger>
-          </TabsList>
-          <div className='flex gap-2.5'>
-            <Button className='flex items-center p-2.5' prefix={ <Copy size={16} />}><span>Копировать</span>  </Button>
-            <Button className='flex items-center p-2.5' prefix={ <CircleUserRound size={16} />}><span>Войти</span> </Button>
-          </div>
-          
-        </header>
+        <div className='flex gap-2.5 w-[280px]'>
+          <Button prefix={<SquarePlus size={16} />}>
+            <span>Создать ТЗ</span>
+          </Button>
+          <Button prefix={<Notebook size={16} />}>
+            <span>Выбрать НПА</span>{' '}
+          </Button>
+          <NpaModal /> 
+        </div>
+        <TabsList className='flex w-[220px]'>
+          <TabsTrigger value='Редактор'>Редактор</TabsTrigger>
+          <TabsTrigger value='Проверка'>Проверка</TabsTrigger>
+        </TabsList>
+        <div className='flex gap-2.5 w-[280px] justify-end'>
+          {/* <Button prefix={<Copy size={16} />}>Копировать</Button> */}
+          <Button prefix={<CircleUserRound size={16} />}>Войти</Button>
+          <ThemeSwitcher />
+        </div>
+      </header>
     )
 }
