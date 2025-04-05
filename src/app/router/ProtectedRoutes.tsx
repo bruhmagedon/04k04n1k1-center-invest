@@ -1,12 +1,11 @@
 import { Navigate, Outlet } from 'react-router-dom';
-
-// import { useProfileUser } from '@shared/hooks';
-// import { Loader } from '@shared/ui';
+import { homeRoutes } from './routesConfig';
 import { Loader } from '@/shared/ui/loader';
+import { useProfileUser } from '@/shared/hooks/useProfileUser';
 
 export const ProtectedRoute = () => {
-  //   const { isAuthorized } = useProfileUser(true);
-  const { isAuthorized } = { isAuthorized: true };
+  const { isAuthorized } = useProfileUser();
+  // const { isAuthorized } = { isAuthorized: true };
 
   // Если статус авторизации еще не известен (например, в момент начала приложения),
   if (isAuthorized === undefined) {
@@ -14,8 +13,8 @@ export const ProtectedRoute = () => {
   }
 
   if (!isAuthorized) {
-    // Если пользователь не авторизован, перенаправляем на главную страницу
-    return <Navigate replace to='/' />;
+    // Если пользователь не авторизован, перенаправляем на страницу логина
+    return <Navigate replace to={homeRoutes.login.path} />;
   }
 
   // Если авторизован — рендер дочерних компонентов

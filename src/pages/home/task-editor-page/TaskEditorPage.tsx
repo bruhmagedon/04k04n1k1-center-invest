@@ -13,10 +13,12 @@ import { FunctionalPanel } from '@/pages/home/main/components/FunctionalPanel';
 import { handleFileChange, setReferences } from '../main/utils/documentHandlers';
 import { useCreateTaskMutation } from '@/modules/task/model/hooks/useCreateTaskMutation';
 import { TabsContent } from '@radix-ui/react-tabs';
+import { useProfileUser } from '@/shared/hooks/useProfileUser';
 
 const TaskEditorPage = () => {
   const { id } = useParams<{ id: string }>();
   const { theme } = useTheme();
+  const { isAuthorized } = useProfileUser();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { mutate: createTask } = useCreateTaskMutation();
 
@@ -43,10 +45,14 @@ const TaskEditorPage = () => {
         {/* <h2 className='text-xl font-semibold mb-2'>Задача #{id}</h2> */}
         <div className='relative w-full rounded-[0.375rem] flex-1 mt-5 mb-20'>
           <BlockNoteView theme={theme as Theme} editor={editor} />
-          <div className='flex items-center justify-center gap-2 mb-2 text-muted-foreground text-sm font-medium px-2'>
-            <InfoIcon size={16} className='opacity-70' />
-            <span>Вы редактируете шаблон технического задания. Для сохранения определите подходящие НПА</span>
-          </div>
+          {isAuthorized && (
+            <div className='flex items-center justify-center gap-2 mb-2 text-muted-foreground text-sm font-medium px-2'>
+              <InfoIcon size={16} className='opacity-70' />
+              <span>
+                Вы редактируете шаблон технического задания. Для сохранения определите подходящие НПА
+              </span>
+            </div>
+          )}
         </div>
         <input
           type='file'

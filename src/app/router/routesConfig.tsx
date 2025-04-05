@@ -16,8 +16,8 @@ export const homeRoutes = {
     element: <LoginPage />
   } satisfies RouteObject,
   register: {
-    path: '/task/:id/register',
-    element: <RegisterPage />
+    path: '/task/:id/editor',
+    element: <TaskEditorPage />
   } satisfies RouteObject,
   verification: {
     path: '/task/:id/verification',

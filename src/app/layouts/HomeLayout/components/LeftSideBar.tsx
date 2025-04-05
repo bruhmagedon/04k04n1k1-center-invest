@@ -3,16 +3,20 @@ import { SidebarItem } from '@/widgets/SidebarItem/SidebarItem';
 import { Search, FileQuestion, Loader2 } from 'lucide-react';
 import { formatDate } from '@/shared/utils/formatDate';
 import { useNavigate } from 'react-router-dom';
-import { useTasksQuery } from '@/modules/task/model/hooks/useTasksInfiniteQuery';
+import { useTasksQuery } from '@/modules/task/model/hooks/useTasksQuery';
+import { useProfileUser } from '@/shared/hooks/useProfileUser';
+import { cn } from '@/shared/utils/cn';
 
 export const LeftSideBar = () => {
   const navigate = useNavigate();
-  const { data, isLoading, isError } = useTasksQuery();
+  const { isAuthorized } = useProfileUser();
+  const { data, isLoading, isError } = useTasksQuery({ enabled: isAuthorized });
 
   const tasks = data?.results || [];
 
   const handleTaskClick = (taskId: number) => {
-    navigate(`/task/${taskId}`);
+    // Navigate to the editor route as defined in routesConfig
+    navigate(`/task/${taskId}/editor`);
   };
 
   return (
@@ -22,25 +26,23 @@ export const LeftSideBar = () => {
         <span>Центр инвест</span>
       </div>
       <div className='px-2.5 relative'>
-        <input
-          placeholder='Поиск'
-          className='w-full pl-12.5 py-4 placeholder:font-medium font-medium pr-4 h-12 border-b-1 border-border rounded-none focus:outline-none'
-          type='text'
+        {isAuthorized && tasks.length > 0 && (
+          <input
+            placeholder='Поиск'
+            className='w-full pl-12.5 py-4 placeholder:font-medium font-medium pr-4 h-12 border-b-1 border-border rounded-none focus:outline-none'
+            type='text'
+          />
+        )}
+        <Search
+          className={cn(
+            'absolute top-3.5 left-5 cursor-pointer invisible',
+            isAuthorized && tasks.length && 'visible'
+          )}
+          size={20}
+          strokeWidth={2.5}
         />
-        <Search className='absolute top-3.5 left-5 cursor-pointer' size={20} strokeWidth={2.5} />
       </div>
       <div className='px-2.5 mt-2.5 pb-2.5 flex flex-col gap-1 w-full overflow-y-auto'>
-        {/* <div className='flex justify-center pb-4 pt-2'>
-          <Button
-            theme='unstyled'
-            size='large'
-            className='bg-white/40 flex-1 text-black hover:bg-white/60 text-md px-0'
-            prefix={<Pencil size={18} />}
-          >
-            Создать шаблон для ТЗ
-          </Button>
-        </div> */}
-
         {isLoading ? (
           <div className='flex justify-center items-center py-10'>
             <Loader2 className='animate-spin' size={24} />
@@ -67,7 +69,11 @@ export const LeftSideBar = () => {
           <div className='flex flex-col items-center mt-[65%] justify-center py-10 text-center text-gray-400'>
             <FileQuestion size={48} className='mb-3 opacity-50' />
             <p className='text-lg font-medium'>Нет доступных заданий</p>
-            <p className='text-sm mt-1'>Создайте техническое задание</p>
+            <p className='text-sm mt-1'>
+              {isAuthorized
+                ? 'Создайте техническое задание'
+                : 'Авторизуйтесь для создания технических заданий'}
+            </p>
           </div>
         )}
       </div>
