@@ -1,6 +1,8 @@
 import { ru } from '@blocknote/core/locales';
 import { BlockNoteView, Theme } from '@blocknote/mantine';
 import { useCreateBlockNote } from '@blocknote/react';
+import mammoth from 'mammoth';
+import { useRef } from 'react';
 
 import '@blocknote/core/fonts/inter.css';
 import '@blocknote/mantine/style.css';
@@ -13,6 +15,7 @@ import { cn } from '@/shared/utils/cn';
 
 const _MainPage = () => {
   const { theme } = useTheme();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const editor = useCreateBlockNote({
     dictionary: ru,
     domAttributes: {
@@ -22,11 +25,42 @@ const _MainPage = () => {
     }
   });
 
+  const handleDocxImport = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    try {
+      const arrayBuffer = await file.arrayBuffer();
+      const result = await mammoth.convertToHtml({ arrayBuffer });
+      editor.removeBlocks(editor.document);
+      const blocksFromHTML = await editor.tryParseHTMLToBlocks(result.value);
+      editor.replaceBlocks(editor.document, blocksFromHTML);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    } catch (error) {
+      console.error('Ошибка при импорте DOCX:', error);
+      alert('Произошла ошибка при импорте DOCX файла');
+    }
+  };
+
   return (
     <main className='flex flex-1 flex-col gap-12 px-6 sm:px-16 h-full items-center mt-5 overflow-hidden'>
       <div className='relative w-full rounded-[0.375rem]'>
         <BlockNoteView theme={theme as Theme} editor={editor} />
       </div>
+
+      {/* Hidden file input */}
+      <input
+        type='file'
+        ref={fileInputRef}
+        onChange={handleFileChange}
+        accept='.docx'
+        style={{ display: 'none' }}
+      />
 
       <div
         style={{
@@ -46,7 +80,9 @@ const _MainPage = () => {
         className='flex relative max-w-fit inset-x-0 mx-auto border border-transparent dark:border-white/[0.2] rounded-full z-[5000] px-2 py-2 items-center justify-center space-x-4'
       >
         <Button className='rounded-md'>Отправить на проверку</Button>
-        <Button className='rounded-md'>Экспортировать из DOCX</Button>
+        <Button className='rounded-md' onClick={handleDocxImport}>
+          Экспортировать из DOCX
+        </Button>
         <Button className='rounded-md'>Экспортировать в PDF</Button>
         <Button className='rounded-md'>Копировать текст</Button>
       </div>
