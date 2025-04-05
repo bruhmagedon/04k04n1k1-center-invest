@@ -11,7 +11,7 @@ import { Badge } from '@/shared/ui/badge';
 const RecommendedNpaPage = () => {
   const { id } = useParams<{ id: string }>();
   const { resultsQuery, isLoading, error } = useSearchNpaMutation();
-  
+    console.log(resultsQuery)
   const npaResults = resultsQuery.data?.results || [];
   const totalCount = resultsQuery.data?.count || 0;
 
