@@ -1,5 +1,6 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
+@import './fonts.css';
 
 @custom-variant dark (&:is(.dark *));
 
@@ -95,6 +96,8 @@
 }
 
 @theme inline {
+  --font-inter: 'Inter', sans-serif;
+
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -153,7 +156,7 @@
   }
   body {
     background: linear-gradient(124deg, #bfffcb 0%, #26ae6f 49.85%, #85fb97 99.69%);
-    @apply min-h-screen text-foreground overflow-hidden;
+    @apply min-h-screen text-foreground overflow-hidden font-inter transition-colors duration-150 ease-out;
   }
 
   /* Theme-dependent gradients */

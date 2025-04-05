@@ -1,4 +1,4 @@
-import logoSvg from '@/shared/assets/logo.svg';
+import CenterInvestLogo from '@/shared/assets/icons/logo.svg?react';
 import { SidebarItem } from '@/widgets/SidebarItem/SidebarItem';
 import { Search, FileQuestion } from 'lucide-react';
 import { sidebarItems } from './SidebarItems.config';
@@ -7,7 +7,7 @@ export const LeftSideBar = () => {
   return (
     <div className='bg-[#232325cc]/75 text-white min-w-[17.5rem] rounded-tl-xl overflow-hidden flex flex-col w-[20%]'>
       <div className='h-15 py-2.5 px-5 flex gap-2.5 items-center text-[1.55rem] border-b border-red font-bold'>
-        <img src={logoSvg} alt='' />
+        <CenterInvestLogo />
         <span>Центр инвест</span>
       </div>
       <div className='px-2.5 relative'>

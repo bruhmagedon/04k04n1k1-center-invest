@@ -3,6 +3,9 @@ import { cn } from '@/shared/utils/cn';
 import { NpaModal } from '@/widgets/NpaModal/NpaModal';
 import { handleDocxImport, handleExportPDF } from '../utils/documentHandlers';
 import { useProfileUser } from '@/shared/hooks/useProfileUser';
+// Fix the import path to match your actual SVG location
+import DocxIcon from '@/shared/assets/icons/docx.svg?react';
+import PdfIcon from '@/shared/assets/icons/pdf.svg?react';
 
 interface FunctionalPanelProps {
   theme: string;
@@ -29,13 +32,13 @@ export const FunctionalPanel = ({ theme }: FunctionalPanelProps) => {
       }}
       className='flex relative max-w-fit inset-x-0 mx-auto border border-transparent dark:border-white/[0.2] rounded-full z-1 px-2 py-2 items-center justify-center space-x-4'
     >
-      <Button className='rounded-md' onClick={handleDocxImport}>
-        Импортировать из DOCX
+      <Button className='rounded-md' onClick={handleDocxImport} postfix={<DocxIcon width={20} height={20} />}>
+        Импортировать из
       </Button>
       {isAuthorized && <Button className='rounded-md'>Определить подходящие НПА</Button>}
       {isAuthorized && <NpaModal />}
-      <Button onClick={handleExportPDF} className='rounded-md'>
-        Экспортировать в PDF
+      <Button onClick={handleExportPDF} className='rounded-md' postfix={<PdfIcon width={20} height={20} />}>
+        Экспортировать в
       </Button>
     </div>
   );
