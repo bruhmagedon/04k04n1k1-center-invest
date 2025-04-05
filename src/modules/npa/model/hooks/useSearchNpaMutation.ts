@@ -9,6 +9,7 @@ import { getSearchStatus, SearchStatusResponse } from '../api/getSearchStatus';
 // Interface for the search ID response
 interface SearchIdResponse {
   search_id: number;
+  task_id: string;
 }
 
 // Interface for NPA search results
@@ -29,7 +30,7 @@ export const useSearchNpaMutation = () => {
   const [searchId, setSearchId] = useState<string | null>(null);
   const [searchComplete, setSearchComplete] = useState(false);
   const { accessToken } = useTokenStore();
-
+    const [taskId, setTaskId] = useState<string | null>(null);
   // Step 1: Submit document and get search ID
   const initialSearchMutation = useMutation<SearchIdResponse, newAxiosError, string>({
     mutationFn: async (content: string) => {
@@ -66,13 +67,15 @@ export const useSearchNpaMutation = () => {
     },
     onSuccess: (data) => {
       console.log('Search ID received:', data.search_id);
-      setSearchId(String(data.task_id));
+     
+    setSearchId(String(data.task_id));
       
+        
       // Reset search complete status when starting a new search
       setSearchComplete(false);
-      
+      setTaskId(String(data.search_id))
       // Invalidate status query when we get a new search ID
-      queryClient.invalidateQueries({ queryKey: ['searchStatus', String(data.search_id)] });
+      queryClient.invalidateQueries({ queryKey: ['searchStatus', searchId] });
     },
     onError: (error) => {
       console.error('Ошибка при поиске НПА:', error.response);
@@ -83,24 +86,32 @@ export const useSearchNpaMutation = () => {
   const statusQuery = useQuery<SearchStatusResponse, newAxiosError>({
     queryKey: ['searchStatus', searchId],
     queryFn: () => getSearchStatus(searchId!),
-    enabled: !!searchId && !searchComplete,
+    enabled: !searchComplete && !!searchId  ,
     refetchInterval: (data) => {
         console.log(data)
-      // If status is complete, stop polling and trigger results query
+        console.log(searchId)
+        if(searchId == 'undefined' ) {
+            setSearchComplete(true);
+            console.log('dad')
+            console.log(data)
+            setSearchId(taskId)
+            queryClient.invalidateQueries({ queryKey: ['npaSearchResults', searchId] });
+            return false;
+        }
+
       if (data && data.state.data?.search_id) {
         setSearchComplete(true);
         setSearchId(String(data.state.data?.search_id))
-        // Invalidate results query when status is complete
+   
         queryClient.invalidateQueries({ queryKey: ['npaSearchResults', searchId] });
         return false;
       }
-      // Otherwise poll every 2 seconds
+      
       return 2000;
     },
     retry: 10
   });
-  
-  // Step 3: Fetch results once search is complete
+
   const resultsQuery = useQuery<NpaSearchResponse, newAxiosError>({
     queryKey: ['npaSearchResults', searchId],
     queryFn: async () => {
