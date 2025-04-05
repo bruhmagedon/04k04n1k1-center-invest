@@ -27,7 +27,6 @@ const _MainPage = () => {
         <BlockNoteView className='' theme={theme} editor={editor} />
         
       </div>
-
       <div>
         <Button>Сохранить</Button>
       </div>

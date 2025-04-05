@@ -1,38 +1,38 @@
-import { Loader } from "@/shared/ui/loader";
-import { cn } from "@/shared/utils/cn";
-import { ComponentProps } from "react";
+import { Loader } from '@/shared/ui/loader';
+import { cn } from '@/shared/utils/cn';
+import { ComponentProps } from 'react';
 import { VariantProps, cva } from 'class-variance-authority';
 export const buttonVariants = cva(
-  'cursor-pointer duration-200 rounded-md transition-all leading-tight ease-in-out flex items-center justify-center gap-1.5 disabled:opacity-50 disabled:cursor-default focus:outline-primary-active',
+  'cursor-pointer duration-200 rounded-sm transition-all leading-tight ease-in-out flex items-center justify-center gap-1.5 disabled:opacity-50 disabled:cursor-default focus:outline-primary-active',
   {
     variants: {
       theme: {
-        primary: 'bg-primary hover:bg-primary-hover active:bg-primary-active text-white',
+        primary: 'hover:hover:bg-[#424247] active:bg-primary-active text-white dark:hover:bg-[#424247]',
         secondary: 'bg-transparent active:bg-primary/30 text-primary hover:bg-primary/20',
         danger: 'bg-danger  hover:bg-danger-hover active:bg-danger-active',
         success: 'bg-success hover:bg-success-hover active:bg-success-active',
         outline: 'bg-transparent hover:bg-foreground/20 active:bg-foreground/30',
-        unstyled: 'bg-transparent',
+        unstyled: 'bg-transparent'
       },
       textStyle: {
         normal: 'font-medium',
         strong: 'font-bold',
         uppercase: 'font-semibold uppercase ',
-        subtle: 'font-normal opacity-80',
+        subtle: 'font-normal opacity-80'
       },
       size: {
-        default: 'p-2',
-        small: 'py-0.5 px-2',
+        default: 'py-1.5 px-2.5',
+        small: '',
         large: 'px-5 py-2.5',
-        icon: 'size-6',
-      },
+        icon: 'size-6'
+      }
     },
     defaultVariants: {
       textStyle: 'normal',
       theme: 'primary',
-      size: 'default',
-    },
-  },
+      size: 'default'
+    }
+  }
 );
 
 export interface ButtonProps
@@ -69,11 +69,7 @@ export const Button = ({
       disabled={isLoading || disabled}
       {...props}
     >
-      {isLoading && (
-        <Loader
-        
-        />
-      )}
+      {isLoading && <Loader />}
       {prefix}
       <span className={cn(isLoading && 'invisible')}>{children}</span>
       {postfix}
