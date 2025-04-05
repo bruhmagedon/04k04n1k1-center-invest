@@ -1,3 +1,6 @@
+import { useCreateTaskMutation } from '@/modules/task/model/hooks/useCreateTaskMutation';
+import { useIsTaskEditPage } from '@/modules/task/model/hooks/useIsTaskEditPage';
+import { CreateTaskResponse } from '@/modules/task/model/types/types';
 import { useLogout } from '@/shared/hooks/useLogout';
 import { useProfileUser } from '@/shared/hooks/useProfileUser';
 import { Button } from '@/shared/ui/button';
@@ -10,29 +13,42 @@ import { NpaCreateModal } from '@/widgets/NpaCreateModal/NpaCreateModal';
 import { ThemeSwitcher } from '@/widgets/ThemeSwitcher/ThemeSwitcher';
 import { CircleUserRound, SquarePlus } from 'lucide-react';
 import { useState } from 'react';
+import { useNavigate } from 'react-router';
+import { v4 as uuidv4 } from 'uuid';
 
 export const HomeHeader = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { isAuthorized } = useProfileUser();
+  const isTaskEditPage = useIsTaskEditPage();
+  const navigate = useNavigate();
+
   const { onLogout } = useLogout();
 
   const onModalClose = () => {
     setIsOpen(false);
   };
 
+  const handleCreateTask = () => {
+    const tempTaskId = uuidv4();
+    sessionStorage.setItem('tempTaskId', tempTaskId);
+    navigate(`/task/${tempTaskId}`);
+  };
+
   return (
     <header className='flex justify-between items-center min-h-(--header-height) border-b px-4'>
       <div className='flex gap-2.5'>
-        <Button prefix={<SquarePlus size={16} />}>
-          <span>Создать ТЗ</span>
+        <Button onClick={handleCreateTask} prefix={<SquarePlus size={16} />}>
+          Создать ТЗ
         </Button>
-        <NpaCreateModal />
+        {isTaskEditPage && <NpaCreateModal />}
       </div>
-      <TabsList className='flex '>
-        <TabsTrigger value='Редактор'>Редактор</TabsTrigger>
-        {isAuthorized && <TabsTrigger value='Проверка'>Проверка</TabsTrigger>}
-        {isAuthorized && <TabsTrigger value='Рекомендуемые НПА'>Рекомендуемые НПА</TabsTrigger>}
-      </TabsList>
+      {isTaskEditPage && (
+        <TabsList className='flex '>
+          <TabsTrigger value='Редактор'>Редактор</TabsTrigger>
+          {isAuthorized && <TabsTrigger value='Проверка'>Проверка</TabsTrigger>}
+          {isAuthorized && <TabsTrigger value='Рекомендуемые НПА'>Рекомендуемые НПА</TabsTrigger>}
+        </TabsList>
+      )}
       <Tabs defaultValue='Авторизация' className='flex flex-row gap-2.5 justify-end'>
         <AllDialog
           triggerIcon={!isAuthorized && <CircleUserRound size={16} />}

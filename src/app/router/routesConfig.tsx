@@ -1,17 +1,13 @@
 import type { RouteObject } from 'react-router-dom';
 
 import { ProfilePage } from '@/pages/dashboard';
-import { DonatePage, LoginPage, MainPage, RegisterPage } from '@/pages/home';
+import { LoginPage, MainPage, RegisterPage, TaskEditorPage } from '@/pages/home';
 
 export const homeRoutes = {
   index: {
     index: true,
     path: '/',
     element: <MainPage />
-  } satisfies RouteObject,
-  donate: {
-    path: '/donate',
-    element: <DonatePage />
   } satisfies RouteObject,
   login: {
     path: '/login',
@@ -20,6 +16,10 @@ export const homeRoutes = {
   register: {
     path: '/register',
     element: <RegisterPage />
+  } satisfies RouteObject,
+  taskEditor: {
+    path: '/task/:id',
+    element: <TaskEditorPage />
   } satisfies RouteObject
 };
 
