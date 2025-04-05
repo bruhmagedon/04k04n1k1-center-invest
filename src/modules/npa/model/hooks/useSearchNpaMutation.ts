@@ -44,7 +44,7 @@ export const useSearchNpaMutation = () => {
   const [taskId, setTaskId] = useState<string | null>(() => {
     return localStorage.getItem(TASK_ID_KEY);
   });
-  
+
   // Persist state changes to localStorage
   useEffect(() => {
     if (searchId) {
@@ -53,11 +53,11 @@ export const useSearchNpaMutation = () => {
       localStorage.removeItem(SEARCH_ID_KEY);
     }
   }, [searchId]);
-  
+
   useEffect(() => {
     localStorage.setItem(SEARCH_COMPLETE_KEY, String(searchComplete));
   }, [searchComplete]);
-  
+
   useEffect(() => {
     if (taskId) {
       localStorage.setItem(TASK_ID_KEY, taskId);
@@ -65,39 +65,39 @@ export const useSearchNpaMutation = () => {
       localStorage.removeItem(TASK_ID_KEY);
     }
   }, [taskId]);
-  
+
   const fetchNpaSearchResults = async (searchId: string | null) => {
     console.log(`Fetching NPA search results for search ID: ${searchId}`);
-  
+
     const headers: Record<string, string> = {
       accept: 'application/json'
     };
-  
+
     if (accessToken) {
       headers['Authorization'] = `Bearer ${accessToken}`;
     }
-  
+
     const response = await api.get<NpaSearchResponse>(
       `/npa/documents/?ordering=-related_tags_count&search_id=${searchId}`,
       { headers }
     );
-  
+
     if (response.status >= 400) {
       throw new Error('Ошибка при получении результатов поиска НПА');
     }
-  
+
     toast.success(`Обработка завершена`, { description: `Найдено ${response.data.count} НПА` });
     console.log('Search results data:', response.data);
     return response.data;
   };
-  
+
   // Add explicit function to fetch results that can be called from components
   const fetchResults = async () => {
     if (!searchId) {
       console.error('Cannot fetch results: No search ID available');
       return null;
     }
-    
+
     try {
       const results = await fetchNpaSearchResults(searchId);
       queryClient.setQueryData(['npaSearchResults', searchId], results);
@@ -107,7 +107,7 @@ export const useSearchNpaMutation = () => {
       throw error;
     }
   };
-  
+
   const initialSearchMutation = useMutation<SearchIdResponse, newAxiosError, string>({
     mutationFn: async (content: string) => {
       const textBlob = new Blob([content], { type: 'text/plain' });
@@ -158,25 +158,25 @@ export const useSearchNpaMutation = () => {
         queryClient.invalidateQueries({ queryKey: ['npaSearchResults', searchId] });
         return false;
       }
-  
+
       // Check the status based on the actual API response structure
-      if (data && data.state && data.state.data && data.state.data.status === 'completed') {
+      if (data && data.state && data.state.data) {
         setSearchComplete(true);
         queryClient.invalidateQueries({ queryKey: ['npaSearchResults', searchId] });
         return false;
       }
-  
+
       return 2000;
     },
     retry: 10
   });
-  
+
   const resultsQuery = useQuery<NpaSearchResponse, newAxiosError>({
     queryKey: ['npaSearchResults', searchId], // Ключ должен быть уникальным для каждого searchId
     queryFn: () => fetchNpaSearchResults(searchId),
     enabled: !!searchId && searchComplete, // Запускаем только когда есть ID и поиск завершен
     staleTime: 5 * 60 * 1000,
-    
+
     // Добавляем обработку ошибок
     onError: (error) => {
       toast.error('Ошибка загрузки результатов', {
