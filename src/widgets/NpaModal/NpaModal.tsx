@@ -53,8 +53,8 @@ export function NpaModal() {
 
   return (
     <AllDialog
-      triggerIcon={<Notebook size={16} />}
-      triggerText={`Выбрать НПА (${selectedCount})`}
+      
+      triggerText={`Отправить на проверку (${selectedCount})`}
       title='Выбор НПА'
       isOpen={isOpen}
       setIsOpen={setIsOpen}

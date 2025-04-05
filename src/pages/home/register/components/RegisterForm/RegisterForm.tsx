@@ -57,7 +57,7 @@ export function RegisterForm() {
 
   return (
     <div className='flex justify-center items-center   w-1/3 min-w-[21.5rem]'>
-      <MagicCard className='w-full p-5 rounded-xl' gradientColor={theme === 'dark' ? '#262626' : '#D9D9D955'}>
+      <MagicCard className='w-full p-5 rounded-xl'>
         <Form {...form}>
           <form className=' space-y-6' onSubmit={form.handleSubmit(onSubmit)}>
             <FormField

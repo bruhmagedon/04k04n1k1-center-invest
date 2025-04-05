@@ -60,8 +60,8 @@ export function RegisterForm({ onSuccess, triggerValue }: RegisterFormProps) {
 
   return (
     <Form {...form}>
-      <form className=' space-y-6' onSubmit={form.handleSubmit(onSubmit)}>
-      <TabsContent value={triggerValue}>
+      <form className='' onSubmit={form.handleSubmit(onSubmit)}>
+      <TabsContent className=' space-y-2 gap-3 flex flex-col' value={triggerValue}>
       <FormField
           render={({ field }) => (
             <FormItem>

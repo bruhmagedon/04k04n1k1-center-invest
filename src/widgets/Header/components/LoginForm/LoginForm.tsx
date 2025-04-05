@@ -51,8 +51,8 @@ export function LoginForm({ onSuccess,  triggerValue }: LoginFormProps) {
 
   return (
     <Form {...form}>
-      <form className='space-y-6' onSubmit={form.handleSubmit(onSubmit)}>
-      <TabsContent value={triggerValue}>
+      <form className='h-full flex '  onSubmit={form.handleSubmit(onSubmit)}>
+      <TabsContent className='space-y-2 gap-3 flex flex-col mt-4' value={triggerValue}>
       <FormField
           name='email'
           control={form.control}
@@ -90,7 +90,7 @@ export function LoginForm({ onSuccess,  triggerValue }: LoginFormProps) {
           )}
         />
         
-        <Button type='submit' disabled={isPending} className='w-full'>
+        <Button type='submit' disabled={isPending} className='w-full absolute bottom-0'>
           {isPending ? <Loader className='w-4 h-4' /> : 'Войти'}
         </Button>
         
