@@ -46,7 +46,7 @@ export const handleCheked = async (searchNpa:UseMutateFunction<SearchIdResponse,
       searchNpa(markdownContent, {
         onSuccess: (data) => {
           console.log('Search NPA success:', data);
-          toast.success(`Найдено ${data.total} подходящих НПА`);
+          toast.success(`Найдено ${data} подходящих НПА`);
         },
         onError: (error) => {
           console.error('Search NPA error:', error);
@@ -64,9 +64,9 @@ export const handleCheked = async (searchNpa:UseMutateFunction<SearchIdResponse,
   };
 
 export const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-  // console.log('File change event triggered, editorRef:', editorRef);
+
   if (!editorRef) {
-    // console.error('Editor reference is not available');
+    
     return;
   }
 
@@ -90,22 +90,66 @@ export const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement
 };
 
 export const handleExportPDF = async () => {
-  // console.log('Export PDF clicked, editorRef:', editorRef);
   if (!editorRef) {
-    // console.error('Editor reference is not available');
     return;
   }
 
   try {
     const blocksWithoutImages = editorRef.document.filter((block) => block.type !== 'image');
+    
+ 
+    let filename = 'document';
+    
+
+    const headingBlock = editorRef.document.find(block => 
+      block.type === 'heading' && block.content && block.content.length > 0
+    );
+    
+    if (headingBlock && headingBlock.content) {
+    
+      const headingText = headingBlock.content
+        .map(item => item.text || '')
+        .join('')
+        .trim();
+      
+      if (headingText) {
+        filename = headingText;
+      }
+    } else {
+      
+      const firstTextBlock = editorRef.document.find(block => 
+        block.content && block.content.length > 0
+      );
+      
+      if (firstTextBlock && firstTextBlock.content) {
+        const text = firstTextBlock.content
+          .map(item => item.text || '')
+          .join('')
+          .trim();
+        
+        if (text) {
+         
+          const words = text.split(/\s+/).slice(0, 3).join(' ');
+          if (words) {
+            filename = words;
+          }
+        }
+      }
+    }
+    
+    
+    filename = filename
+      .replace(/[\/\\:*?"<>|]/g, '_')  
+      .substring(0, 50);               
+    
     const exporter = new PDFExporter(editorRef.schema, pdfDefaultSchemaMappings);
     const pdfDocument = await exporter.toReactPDFDocument(blocksWithoutImages);
     const pdfBlob = await ReactPDF.pdf(pdfDocument).toBlob();
     const pdfUrl = URL.createObjectURL(pdfBlob);
-
+   
     const link = document.createElement('a');
     link.href = pdfUrl;
-    link.download = 'document.pdf';
+    link.download = `${filename}.pdf`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
