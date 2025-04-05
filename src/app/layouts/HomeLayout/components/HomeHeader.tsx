@@ -17,11 +17,12 @@ export const HomeHeader = () => {
         <Button prefix={<SquarePlus size={16} />}>
           <span>Создать ТЗ</span>
         </Button>
-        <NpaModal />
+        
       </div>
-      <TabsList className='flex w-[220px]'>
+      <TabsList className='flex '>
         <TabsTrigger value='Редактор'>Редактор</TabsTrigger>
         <TabsTrigger value='Проверка'>Проверка</TabsTrigger>
+        <TabsTrigger value='Рекомендуемые НПА'>Рекомендуемые НПА</TabsTrigger>
       </TabsList>
       <Tabs defaultValue='Авторизация' className='flex flex-row gap-2.5 justify-end'>
         {/* <Button prefix={<Copy size={16} />}>Копировать</Button> */}
