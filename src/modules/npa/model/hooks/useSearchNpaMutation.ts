@@ -33,7 +33,30 @@ export const useSearchNpaMutation = () => {
   const [searchComplete, setSearchComplete] = useState(false);
   const { accessToken } = useTokenStore();
   const [taskId, setTaskId] = useState<string | null>(null);
-
+  const fetchNpaSearchResults = async (searchId: string | null, accessToken?: string) => {
+    console.log(`Fetching NPA search results for search ID: ${searchId}`);
+  
+    const headers: Record<string, string> = {
+      accept: 'application/json'
+    };
+  
+    if (accessToken) {
+      headers['Authorization'] = `Bearer ${accessToken}`;
+    }
+  
+    const response = await api.get<NpaSearchResponse>(
+      `/npa/documents/?ordering=-related_tags_count&search_id=${searchId}`,
+      { headers }
+    );
+  
+    if (response.status >= 400) {
+      throw new Error('Ошибка при получении результатов поиска НПА');
+    }
+  
+    toast.success(`Обработка завершена`, { description: `Найдено ${response.data.count} НПА` });
+    console.log(response.data)
+    return response.data;
+  };
   const initialSearchMutation = useMutation<SearchIdResponse, newAxiosError, string>({
     mutationFn: async (content: string) => {
       const textBlob = new Blob([content], { type: 'text/plain' });
@@ -97,36 +120,15 @@ export const useSearchNpaMutation = () => {
     },
     retry: 10
   });
-
+  
   const resultsQuery = useQuery<NpaSearchResponse, newAxiosError>({
     queryKey: ['npaSearchResults', searchId],
-    queryFn: async () => {
-      console.log(`Fetching NPA search results for search ID: ${searchId}`);
-
-      const headers: Record<string, string> = {
-        accept: 'application/json'
-      };
-
-      if (accessToken) {
-        headers['Authorization'] = `Bearer ${accessToken}`;
-      }
-
-      const response = await api.get<NpaSearchResponse>(
-        `/npa/documents/?ordering=-related_tags_count&search_id=${searchId}`,
-        { headers }
-      );
-
-      if (response.status >= 400) {
-        throw new Error('Ошибка при получении результатов поиска НПА');
-      }
-
-      toast.success(`Обработка завершена`, { description: `Найдено ${response.data.count} НПА` });
-
-      return response.data;
-    },
+    queryFn: () => fetchNpaSearchResults(searchId),
     enabled: !!searchId && searchComplete,
     staleTime: 5 * 60 * 1000
-  });
+});
+
+       
 
   return {
     initialSearchMutation,
