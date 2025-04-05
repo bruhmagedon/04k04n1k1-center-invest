@@ -2,6 +2,8 @@ import type { RouteObject } from 'react-router-dom';
 
 import { ProfilePage } from '@/pages/dashboard';
 import { LoginPage, MainPage, RegisterPage, TaskEditorPage } from '@/pages/home';
+import RecommendedNpaPage from '@/pages/home/recommended-npa-page/RecommendedNpaPage';
+import VerificationPage from '@/pages/home/verification-page/VerificationPage';
 
 export const homeRoutes = {
   index: {
@@ -17,9 +19,13 @@ export const homeRoutes = {
     path: '/register',
     element: <RegisterPage />
   } satisfies RouteObject,
-  taskEditor: {
-    path: '/task/:id',
-    element: <TaskEditorPage />
+  verification:{
+    path: '/verification',
+    element: <VerificationPage />
+  } satisfies RouteObject,
+  recommendedNpa:{
+    path: '/recommended-npa',
+    element: <RecommendedNpaPage />
   } satisfies RouteObject
 };
 

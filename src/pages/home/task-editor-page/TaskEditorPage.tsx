@@ -11,6 +11,7 @@ import { useTheme } from '@/shared/hooks/useTheme';
 
 import { FunctionalPanel } from '@/pages/home/main/components/FunctionalPanel';
 import { handleFileChange, setReferences } from '../main/utils/documentHandlers';
+import { TabsContent } from '@radix-ui/react-tabs';
 
 const TaskEditorPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -34,26 +35,30 @@ const TaskEditorPage = () => {
   }, [editor, fileInputRef, id]);
 
   return (
-    <main className='flex flex-1 flex-col px-6 sm:px-16 h-full w-full items-center overflow-hidden relative'>
-      {/* <h2 className='text-xl font-semibold mb-2'>Задача #{id}</h2> */}
-      <div className='relative w-full rounded-[0.375rem] flex-1 mt-5 mb-20'>
-        <BlockNoteView theme={theme as Theme} editor={editor} />
-        <div className='flex items-center justify-center gap-2 mb-2 text-muted-foreground text-sm font-medium px-2'>
-          <InfoIcon size={16} className='opacity-70' />
-          <span>Вы редактируете шаблон технического задания. Для сохранения определите подходящие НПА</span>
+    <TabsContent value='Редактор'>
+      <main className='flex flex-1 flex-col px-6 sm:px-16 h-full w-full items-center overflow-hidden relative'>
+        {/* <h2 className='text-xl font-semibold mb-2'>Задача #{id}</h2> */}
+        <div className='relative w-full rounded-[0.375rem] flex-1 mt-5 mb-20'>
+          <BlockNoteView theme={theme as Theme} editor={editor} />
+          <div className='flex items-center justify-center gap-2 mb-2 text-muted-foreground text-sm font-medium px-2'>
+            <InfoIcon size={16} className='opacity-70' />
+            <span>Вы редактируете шаблон технического задания. Для сохранения определите подходящие НПА</span>
+          </div>
         </div>
-      </div>
-      <input
-        type='file'
-        ref={fileInputRef}
-        onChange={handleFileChange}
-        accept='.docx'
-        style={{ display: 'none' }}
-      />
-      <div className='absolute bottom-1 left-0 right-0 flex justify-center'>
-        <FunctionalPanel theme={theme} />
-      </div>
-    </main>
+        <input
+          type='file'
+          ref={fileInputRef}
+          onChange={handleFileChange}
+          accept='.docx'
+          style={{ display: 'none' }}
+        />
+        <div className='absolute bottom-1 left-0 right-0 flex justify-center'>
+          <FunctionalPanel theme={theme} />
+        </div>
+      </main>
+  </TabsContent>
+        
+    
   );
 };
 
