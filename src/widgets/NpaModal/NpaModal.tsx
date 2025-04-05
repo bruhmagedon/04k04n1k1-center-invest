@@ -65,7 +65,7 @@ export function NpaModal() {
           <form onSubmit={form.handleSubmit(handleSubmit)} className='space-y-4'>
             <NpaList items={paginatedItems} form={form} maxSelection={MAX_SELECTION} />
 
-            <div className=' bottom-0 bg-background pt-4'>
+            <div className=' bottom-0  pt-4'>
               <PaginationControl
                 currentPage={currentPage}
                 totalPages={totalPages}
