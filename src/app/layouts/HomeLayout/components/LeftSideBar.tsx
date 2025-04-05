@@ -8,7 +8,7 @@ export const LeftSideBar = () => {
     <div className='bg-[#232325cc]/75 text-white min-w-[17.5rem] rounded-tl-xl overflow-hidden flex flex-col w-[20%]'>
       <div className='h-15 py-2.5 px-5 flex gap-2.5 items-center text-[1.55rem] border-b border-red font-bold'>
         <img src={logoSvg} alt='' />
-        <span>Центр инцест</span>
+        <span>Центр инвест</span>
       </div>
       <div className='px-2.5 relative'>
         <input
@@ -20,9 +20,7 @@ export const LeftSideBar = () => {
       </div>
       <div className='px-2.5 mt-2.5 pb-2.5 flex flex-col gap-1 w-full overflow-y-auto'>
         {sidebarItems.length > 0 ? (
-          sidebarItems.map((item) => (
-            <SidebarItem key={item.id}>{item.title}</SidebarItem>
-          ))
+          sidebarItems.map((item) => <SidebarItem key={item.id}>{item.title}</SidebarItem>)
         ) : (
           <div className='flex flex-col items-center justify-center py-10 text-center text-gray-400'>
             <FileQuestion size={48} className='mb-3 opacity-50' />

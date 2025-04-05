@@ -48,6 +48,7 @@ export const HomeHeader = () => {
           triggerIcon={!isAuthorized && <CircleUserRound size={16} />}
           triggerText={`${!isAuthorized ? 'Войти' : 'Выйти'}`}
           title='Вход в систему'
+          authForm
           isOpen={isOpen}
           setIsOpen={setIsOpen}
           triggerAction={onLogout}

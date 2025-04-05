@@ -10,6 +10,7 @@ interface AuthDialogProps {
   triggerIcon?: ReactNode;
   title: string;
   children?: ReactNode;
+  authForm?: boolean;
   isOpen: boolean;
   triggerAction?: () => void;
   triggerValue?: string;
@@ -19,6 +20,7 @@ interface AuthDialogProps {
 export const AllDialog = ({
   triggerText,
   title,
+  authForm,
   children,
   isOpen,
   setIsOpen,
@@ -28,10 +30,11 @@ export const AllDialog = ({
   const { accessToken } = useTokenStore();
 
   const onClick = () => {
-    if (!accessToken) {
+    if (!authForm) {
+      setIsOpen(true);
+    } else if (!accessToken) {
       setIsOpen(true);
     }
-
     if (accessToken) {
       triggerAction?.();
     }
