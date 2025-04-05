@@ -11,15 +11,13 @@ import { NpaCreateModal } from '@/widgets/NpaCreateModal/NpaCreateModal';
 import { ThemeSwitcher } from '@/widgets/ThemeSwitcher/ThemeSwitcher';
 import { CircleUserRound, SquarePlus } from 'lucide-react';
 import { useState } from 'react';
-import { useNavigate, useParams } from 'react-router';
+import { useNavigate } from 'react-router';
 import { v4 as uuidv4 } from 'uuid';
 
 export const HomeHeader = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { isAuthorized } = useProfileUser();
-  const isTaskEditPage = useIsTaskEditPage();
   const navigate = useNavigate();
-  const { id } = useParams<{ id: string }>();
 
   const { onLogout } = useLogout();
 
@@ -30,7 +28,7 @@ export const HomeHeader = () => {
   const handleCreateTask = () => {
     const tempTaskId = uuidv4();
     sessionStorage.setItem('tempTaskId', tempTaskId);
-    navigate(`/task/${tempTaskId}/register`);
+    navigate(`/task/${tempTaskId}/editor`);
   };
 
   return (
@@ -41,7 +39,7 @@ export const HomeHeader = () => {
             Создать ТЗ
           </Button>
         )}
-        {isTaskEditPage && <NpaCreateModal />}
+        {isAuthorized && <NpaCreateModal />}
       </div>
       <TabsList className='flex'>
         <TabsTrigger value='Редактор'>Редактор</TabsTrigger>
