@@ -36,20 +36,20 @@ export const handleCheked = async (
   }
 
   try {
-    const blocksWithoutImages = editorRef.document.filter((block) => block.type !== 'image');
-    const markdownContent = await editorRef.blocksToMarkdownLossy(blocksWithoutImages);
+    const markdownContent = await editorRef.blocksToMarkdownLossy(editorRef.document);
+
     const markdownBlob = new Blob([markdownContent], { type: 'text/markdown' });
     const markdownFile = new File([markdownBlob], 'document.md', { type: 'text/markdown' });
 
     searchNpa(markdownContent, {
       onSuccess: (data) => {
         console.log('Search NPA success:', data);
-        toast.success(`Заявка №${data.search_id} начала обработку`);
+        toast.success(`Найдено ${data.total} подходящих НПА`);
       },
       onError: (error) => {
         console.error('Search NPA error:', error);
         toast.error('Ошибка при поиске НПА', {
-          description: 'Вы отправили пустое техническое задание или произошла ошибка на сервере'
+          description: error.response?.data?.detail || 'Проверьте подключение к серверу'
         });
       }
     });
@@ -62,9 +62,7 @@ export const handleCheked = async (
 };
 
 export const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-  // console.log('File change event triggered, editorRef:', editorRef);
   if (!editorRef) {
-    // console.error('Editor reference is not available');
     return;
   }
 
@@ -93,6 +91,42 @@ export const handleExportPDF = async () => {
 
   try {
     const blocksWithoutImages = editorRef.document.filter((block) => block.type !== 'image');
+
+    let filename = 'document';
+
+    const headingBlock = editorRef.document.find(
+      (block) => block.type === 'heading' && block.content && block.content.length > 0
+    );
+
+    if (headingBlock && headingBlock.content) {
+      const headingText = headingBlock.content
+        .map((item) => item.text || '')
+        .join('')
+        .trim();
+
+      if (headingText) {
+        filename = headingText;
+      }
+    } else {
+      const firstTextBlock = editorRef.document.find((block) => block.content && block.content.length > 0);
+
+      if (firstTextBlock && firstTextBlock.content) {
+        const text = firstTextBlock.content
+          .map((item) => item.text || '')
+          .join('')
+          .trim();
+
+        if (text) {
+          const words = text.split(/\s+/).slice(0, 3).join(' ');
+          if (words) {
+            filename = words;
+          }
+        }
+      }
+    }
+
+    filename = filename.replace(/[\/\\:*?"<>|]/g, '_').substring(0, 50);
+
     const exporter = new PDFExporter(editorRef.schema, pdfDefaultSchemaMappings);
     const pdfDocument = await exporter.toReactPDFDocument(blocksWithoutImages);
     const pdfBlob = await ReactPDF.pdf(pdfDocument).toBlob();
@@ -100,7 +134,7 @@ export const handleExportPDF = async () => {
 
     const link = document.createElement('a');
     link.href = pdfUrl;
-    link.download = 'document.pdf';
+    link.download = `${filename}.pdf`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
