@@ -10,12 +10,13 @@ import { ThemeSwitcher } from '@/widgets/ThemeSwitcher/ThemeSwitcher';
 import { AllDialog } from '@/widgets/AuthDialog/OurDialog';
 import { RegisterForm } from '@/widgets/Header/components/RegisterForm/RegisterForm';
 import { LoginForm } from '@/widgets/Header/components/LoginForm/LoginForm';
+import { useState } from 'react';
 
 export const Header = () => {
   const { data } = useGetUserQuery();
   const { accessToken, setAccessToken } = useTokenStore();
   const queryCache = new QueryCache();
-
+  const [isOpen, setIsOpen] = useState(false);
   const logOut = () => {
     localStorage.clear();
     setAccessToken(null);
@@ -35,11 +36,11 @@ export const Header = () => {
           <Button onClick={logOut}>Выход</Button>
         ) : (
           <>
-            <AllDialog triggerText='Вход' title='Вход в систему'>
+            <AllDialog triggerText='Вход' title='Вход в систему' isOpen={isOpen} setIsOpen={setIsOpen}>
               <LoginForm onSuccess={() => window.location.reload()} />
             </AllDialog>
 
-            <AllDialog triggerText='Регистрация' title='Регистрация'>
+            <AllDialog triggerText='Регистрация' title='Регистрация' isOpen={isOpen} setIsOpen={setIsOpen}>
               <RegisterForm onSuccess={() => window.location.reload()} />
             </AllDialog>
           </>
