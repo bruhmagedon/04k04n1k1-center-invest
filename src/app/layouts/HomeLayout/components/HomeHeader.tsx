@@ -21,7 +21,7 @@ export const HomeHeader = () => {
   };
 
   return (
-    <header className='flex justify-between items-center h-15 px-7.5 border-b'>
+    <header className='flex justify-between items-center min-h-(--header-height) border-b px-4'>
       <div className='flex gap-2.5'>
         <Button prefix={<SquarePlus size={16} />}>
           <span>Создать ТЗ</span>

@@ -97,6 +97,7 @@
 
 @theme inline {
   --font-inter: 'Inter', sans-serif;
+  --header-height: 3.75rem;
 
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);

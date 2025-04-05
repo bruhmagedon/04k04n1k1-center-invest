@@ -6,7 +6,7 @@ import { sidebarItems } from './SidebarItems.config';
 export const LeftSideBar = () => {
   return (
     <div className='bg-[#232325cc]/75 text-white min-w-[17.5rem] rounded-tl-xl overflow-hidden flex flex-col w-[20%]'>
-      <div className='h-15 py-2.5 px-5 flex gap-2.5 items-center text-[1.55rem] border-b border-red font-bold'>
+      <div className='min-h-(--header-height) py-2.5 px-5 flex gap-2.5 items-center text-[1.55rem] border-b border-red font-bold'>
         <CenterInvestLogo />
         <span>Центр инвест</span>
       </div>
