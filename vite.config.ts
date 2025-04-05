@@ -15,11 +15,12 @@ export default defineConfig({
     }),
     svgrPlugin(),
     tsconfigPaths(),
-    VitePWA(
-      { registerType: 'autoUpdate', workbox: {
+    VitePWA({
+      registerType: 'autoUpdate',
+      workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg}']
-      } }
-    ),
+      }
+    }),
     pluginChecker({ typescript: true })
   ],
   build: {
@@ -30,8 +31,10 @@ export default defineConfig({
     include: ['react', 'react-dom']
   },
   server: {
+    host: '0.0.0.0', // Разрешает подключение со всех IP
     port: 1337,
     cors: true,
+    strictPort: true, // Запрещает автоматический выбор порта
     proxy: {
       '/api': {
         target: 'http://103.71.23.62/',
