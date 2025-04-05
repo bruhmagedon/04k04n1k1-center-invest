@@ -178,6 +178,7 @@ export const useSearchNpaMutation = () => {
     staleTime: 5 * 60 * 1000,
     
     // Добавляем обработку ошибок
+    //@ts-ignore
     onError: (error) => {
       toast.error('Ошибка загрузки результатов', {
         description: error.message

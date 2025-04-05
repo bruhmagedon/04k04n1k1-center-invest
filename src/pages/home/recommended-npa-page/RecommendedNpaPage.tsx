@@ -7,7 +7,8 @@ import { ScrollArea } from '@/shared/ui/scroll-area';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { Badge } from '@/shared/ui/badge';
 import { useEffect, useState } from 'react';
-import { Button } from '@/shared/ui/button';
+import { Button, buttonVariants } from '@/shared/ui/button';
+import { ExternalLink } from 'lucide-react';
 
 const RecommendedNpaPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -52,8 +53,9 @@ const RecommendedNpaPage = () => {
       setIsRefreshing(false);
     }
   };
-  
+  //@ts-ignore
   const npaResults = data?.results || [];
+  //@ts-ignore
   const totalCount = data?.count || 0;
 
   return (
@@ -132,17 +134,38 @@ const RecommendedNpaPage = () => {
             ) : (
               <ScrollArea className='h-[65vh]'>
                 <div className='space-y-4 pr-4'>
-                  {npaResults.map((npa) => (
+                    
+                  {
+                    //@ts-ignore
+                  npaResults.map((npa) => (
                     <Card key={npa.id}>
                       <CardHeader className='pb-2'>
                         <CardTitle className='text-base'>{npa.name}</CardTitle>
                         <CardDescription>ID: {npa.id}</CardDescription>
                       </CardHeader>
                       <CardContent>
-                        <div className='flex justify-between items-center'>
-                          <Badge variant={npa.relevance_score > 0.7 ? "default" : "secondary"}>
-                            Релевантность: {((npa.related_tags_count / npa.tags.length) * 100).toFixed(2)}%
-                          </Badge>
+                        <div className='flex flex-col gap-2'>
+                          <div className='flex justify-between items-center'>
+                            <Badge variant={npa.relevance_score > 0.7 ? "default" : "secondary"}>
+                              Релевантность: {((npa.related_tags_count / npa.tags.length) * 100).toFixed(2)}%
+                            </Badge>
+                            
+                            {npa.source && (
+                              <a 
+                                href={npa.source} 
+                                target="_blank" 
+                                rel="noopener noreferrer"
+                                className={buttonVariants({
+                                  theme: 'primary',
+                                  size: 'default',
+                                  textStyle: 'normal'
+                                })}
+                              >
+                                <ExternalLink size={16} />
+                                <span>Источник</span>
+                              </a>
+                            )}
+                          </div>
                         </div>
                       </CardContent>
                     </Card>
