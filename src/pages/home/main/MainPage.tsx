@@ -84,12 +84,13 @@ const handleExportPDF = async () => {
         className='flex relative max-w-fit inset-x-0 mx-auto border border-transparent dark:border-white/[0.2] rounded-full z-[5000] px-2 py-2 items-center justify-center space-x-4'
       >
 
-        <NpaModal />
+       
         <Button className='rounded-md'>Импортировать из DOCX</Button>
       
       
-        <Button onClick={handleExportPDF} className='rounded-md'>Экспортировать в PDF</Button>
         <Button className='rounded-md'>Определить подходящие НПА</Button>
+        <NpaModal />
+        <Button onClick={handleExportPDF} className='rounded-md'>Экспортировать в PDF</Button>
       </div>
     </main>
   );
