@@ -160,7 +160,7 @@ export const useSearchNpaMutation = () => {
       }
   
       // Check the status based on the actual API response structure
-      if (data && data.state && data.state.data && data.state.data.status === 'completed') {
+      if (data && data.state && data.state.data) {
         setSearchComplete(true);
         queryClient.invalidateQueries({ queryKey: ['npaSearchResults', searchId] });
         return false;
