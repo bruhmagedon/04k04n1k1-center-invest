@@ -1,5 +1,5 @@
 export type NpaItem = {
-    id: string
-    label: string
-    category: string
-  }
+  id: string;
+  label: string;
+  category: string;
+};
