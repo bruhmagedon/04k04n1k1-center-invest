@@ -52,13 +52,7 @@ export function NpaModal() {
   };
 
   return (
-    <AllDialog
-      
-      triggerText={`Отправить на проверку (${selectedCount})`}
-      title='Выбор НПА'
-      isOpen={isOpen}
-      setIsOpen={setIsOpen}
-    >
+    <AllDialog triggerText={`Отправить на проверку`} title='Выбор НПА' isOpen={isOpen} setIsOpen={setIsOpen}>
       <div className='max-w-2xl max-h-[80vh] flex flex-col'>
         <NpaSearch searchTerm={searchTerm} onSearchChange={setSearchTerm} />
         <Form {...form}>
