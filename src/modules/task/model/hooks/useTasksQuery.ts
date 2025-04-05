@@ -4,15 +4,23 @@ import { api } from '@/shared/api/axios-instance';
 
 interface UseTasksQueryOptions {
   enabled?: boolean;
+  searchTerm?: string;
 }
 
 export const useTasksQuery = (options: UseTasksQueryOptions = {}) => {
+  const { searchTerm = '', enabled = true } = options;
+  
   return useQuery<TasksResponse>({
-    queryKey: ['tasks'],
+    queryKey: ['tasks', searchTerm], // Include searchTerm in the query key
     queryFn: async () => {
-      const { data } = await api.get<TasksResponse>('/npa/analytics/');
+      // Add search parameter if searchTerm is provided
+      const endpoint = searchTerm 
+        ? `/npa/analytics/?search=${encodeURIComponent(searchTerm)}`
+        : '/npa/analytics/';
+        
+      const { data } = await api.get<TasksResponse>(endpoint);
       return data;
     },
-    enabled: options.enabled !== false
+    enabled: enabled !== false
   });
 };

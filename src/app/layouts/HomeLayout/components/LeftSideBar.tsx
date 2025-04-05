@@ -1,22 +1,39 @@
 import CenterInvestLogo from '@/shared/assets/icons/logo.svg?react';
 import { SidebarItem } from '@/widgets/SidebarItem/SidebarItem';
-import { Search, FileQuestion, Loader2 } from 'lucide-react';
+import { Search, FileQuestion, Loader2, X } from 'lucide-react';
 import { formatDate } from '@/shared/utils/formatDate';
 import { useNavigate } from 'react-router-dom';
 import { useTasksQuery } from '@/modules/task/model/hooks/useTasksQuery';
 import { useProfileUser } from '@/shared/hooks/useProfileUser';
 import { cn } from '@/shared/utils/cn';
+import { useState, useEffect } from 'react';
+import { useDebounce } from '@/shared/hooks/useDebounce';
 
 export const LeftSideBar = () => {
   const navigate = useNavigate();
   const { isAuthorized } = useProfileUser();
-  const { data, isLoading, isError } = useTasksQuery({ enabled: isAuthorized });
+  const [searchTerm, setSearchTerm] = useState('');
+  const debouncedSearchTerm = useDebounce(searchTerm, 500);
+  
+  // Use the debounced search term in the query
+  const { data, isLoading, isError } = useTasksQuery({ 
+    enabled: isAuthorized,
+    searchTerm: debouncedSearchTerm 
+  });
 
   const tasks = data?.results || [];
 
   const handleTaskClick = (taskId: number) => {
     // Navigate to the editor route as defined in routesConfig
     navigate(`/task/${taskId}/editor`);
+  };
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+  };
+
+  const clearSearch = () => {
+    setSearchTerm('');
   };
 
   return (
@@ -26,21 +43,30 @@ export const LeftSideBar = () => {
         <span>Центр инвест</span>
       </div>
       <div className='px-2.5 relative'>
-        {isAuthorized && tasks.length > 0 && (
-          <input
-            placeholder='Поиск'
-            className='w-full pl-12.5 py-4 placeholder:font-medium font-medium pr-4 h-12 border-b-1 border-border rounded-none focus:outline-none'
-            type='text'
-          />
+        {isAuthorized && (
+          <div className="relative">
+            <input
+              placeholder='Поиск'
+              className='w-full pl-12.5 py-4 placeholder:font-medium font-medium pr-10 h-12 border-b-1 border-border rounded-none focus:outline-none'
+              type='text'
+              value={searchTerm}
+              onChange={handleSearchChange}
+            />
+            <Search
+              className='absolute top-3.5 left-5 cursor-pointer'
+              size={20}
+              strokeWidth={2.5}
+            />
+            {searchTerm && (
+              <button 
+                onClick={clearSearch}
+                className="absolute right-3 top-3.5 text-gray-400 hover:text-white transition-colors"
+              >
+                <X size={18} />
+              </button>
+            )}
+          </div>
         )}
-        <Search
-          className={cn(
-            'absolute top-3.5 left-5 cursor-pointer invisible',
-            isAuthorized && tasks.length && 'visible'
-          )}
-          size={20}
-          strokeWidth={2.5}
-        />
       </div>
       <div className='px-2.5 mt-2.5 pb-2.5 flex flex-col gap-1 w-full overflow-y-auto'>
         {isLoading ? (
@@ -68,11 +94,16 @@ export const LeftSideBar = () => {
         ) : (
           <div className='flex flex-col items-center mt-[65%] justify-center py-10 text-center text-gray-400'>
             <FileQuestion size={48} className='mb-3 opacity-50' />
-            <p className='text-lg font-medium'>Нет доступных заданий</p>
+            <p className='text-lg font-medium'>
+              {searchTerm ? 'Ничего не найдено' : 'Нет доступных заданий'}
+            </p>
             <p className='text-sm mt-1'>
-              {isAuthorized
-                ? 'Создайте техническое задание'
-                : 'Авторизуйтесь для создания технических заданий'}
+              {searchTerm 
+                ? 'Попробуйте изменить поисковый запрос' 
+                : isAuthorized
+                  ? 'Создайте техническое задание'
+                  : 'Авторизуйтесь для создания технических заданий'
+              }
             </p>
           </div>
         )}
