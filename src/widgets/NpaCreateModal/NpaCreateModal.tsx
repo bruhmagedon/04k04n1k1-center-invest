@@ -2,7 +2,6 @@ import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
-import mammoth from 'mammoth';
 import { toast } from 'sonner';
 
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/shared/ui/form';
@@ -10,23 +9,26 @@ import { Input } from '@/shared/ui/input';
 import { Button } from '@/shared/ui/button';
 import { AllDialog } from '@/widgets/AuthDialog/OurDialog';
 import { SquarePlus, Upload } from 'lucide-react';
+import { useCreateNpaMutation } from '@/modules/npa/model/hooks/useCreateNpaMutation';
+import { useTokenStore } from '@/modules/auth/model/store/authStore';
 
 const FormSchema = z.object({
   title: z.string().min(3, 'Название должно содержать минимум 3 символа'),
-  link: z.string().min(3,'Ссылка должна содержать минимум 3 символа')
+  link: z.string().min(3,'Ссылка должна содержать минимум 3 символа').optional()
 });
 
-type FormValues = z.infer<typeof FormSchema> & {
-  fileContent?: string;
-};
+type FormValues = z.infer<typeof FormSchema>;
 
 export function NpaCreateModal() {
   const [isOpen, setIsOpen] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [fileName, setFileName] = useState<string | null>(null);
-  const [fileContent, setFileContent] = useState<string | null>(null);
+  const [fileObject, setFileObject] = useState<File | null>(null);
+  const { accessToken } = useTokenStore();
+  
+  const { mutate, isPending } = useCreateNpaMutation();
 
-  const form = useForm<z.infer<typeof FormSchema>>({
+  const form = useForm<FormValues>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
       title: '',
@@ -41,41 +43,56 @@ export function NpaCreateModal() {
     try {
       setIsUploading(true);
       setFileName(file.name);
-      
-      const arrayBuffer = await file.arrayBuffer();
-      const result = await mammoth.extractRawText({ arrayBuffer });
-      setFileContent(result.value);
+      setFileObject(file);
       
       toast.success('Файл успешно загружен');
     } catch (error) {
       console.error('Ошибка при обработке файла:', error);
       toast.error('Ошибка при обработке файла');
       setFileName(null);
-      setFileContent(null);
+      setFileObject(null);
     } finally {
       setIsUploading(false);
     }
   };
 
-  const handleSubmit = (data: z.infer<typeof FormSchema>) => {
-    if (!fileContent) {
+  const handleSubmit = (data: FormValues) => {
+    if (!fileObject) {
       toast.error('Необходимо загрузить файл');
       return;
     }
 
-    const formData: FormValues = {
-      ...data,
-      fileContent
-    };
+    if (!accessToken) {
+      toast.error('Необходимо авторизоваться');
+      return;
+    }
 
-    // Here you would send the data to your backend
-    console.log('Submitting NPA data:', formData);
+    const formData = new FormData();
+    formData.append('name', data.title);
+    formData.append('file', fileObject);
+    formData.append('source', 'user');
     
-    toast.success('НПА успешно создан');
-    setIsOpen(false);
-    form.reset();
-    setFileName(null);
-    setFileContent(null);
+    if (data.link) {
+      formData.append('link', data.link);
+    }
+
+    mutate(
+      formData,
+      {
+        onSuccess: () => {
+          toast.success('НПА успешно создан');
+          setIsOpen(false);
+          form.reset();
+          setFileName(null);
+          setFileObject(null);
+        },
+        onError: (error) => {
+          toast.error('Ошибка при создании НПА', { 
+            description: error.response?.data?.detail || 'Проверьте введенные данные'
+          });
+        }
+      }
+    );
   };
 
   return (
@@ -86,9 +103,9 @@ export function NpaCreateModal() {
       setIsOpen={setIsOpen}
       triggerIcon={<SquarePlus size={16} />}
     >
-      <div className="max-w-md">
+      <div className="max-w-md h-full relative">
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4 h-full flex flex-col">
             <FormField
               control={form.control}
               name="title"
@@ -116,12 +133,11 @@ export function NpaCreateModal() {
                   />
                   <Button
                     type="button"
-                    prefix={  <Upload className="mr-2 h-4 w-4" />}
+                    prefix={<Upload className="mr-2 h-4 w-4" />}
                     onClick={() => document.getElementById('file-upload')?.click()}
                     className="w-full flex"
                     disabled={isUploading}
                   >
-                  
                     {isUploading ? 'Загрузка...' : 'Загрузить документ'}
                   </Button>
                 </div>
@@ -149,11 +165,10 @@ export function NpaCreateModal() {
 
             <Button 
               type="submit" 
-              className="w-full mt-6"
-              disabled={isUploading || !fileContent}
-              
+              className="w-full mt-6 bottom-0 absolute"
+              disabled={isUploading || !fileObject || isPending}
             >
-              Создать НПА
+              {isPending ? 'Создание...' : 'Создать НПА'}
             </Button>
           </form>
         </Form>

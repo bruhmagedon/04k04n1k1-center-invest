@@ -41,7 +41,7 @@ export const AllDialog = ({
       
      <DialogContent className='sm:max-w-[26.5rem] p-0 min-h-[27.5rem]'>
           <MagicCard className='w-full p-5 rounded-md flex' >
-            <div className='flex flex-col gap-4 justify-between h-full relative'>
+            <div className='flex flex-col gap-4 h-full relative'>
             <DialogHeader>
               <DialogTitle className='mb-4'>{title}</DialogTitle>
             </DialogHeader>
