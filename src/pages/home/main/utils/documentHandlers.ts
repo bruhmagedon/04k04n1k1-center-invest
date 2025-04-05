@@ -4,10 +4,9 @@ import * as ReactPDF from '@react-pdf/renderer';
 import mammoth from 'mammoth';
 import { toast } from 'sonner';
 import { RefObject } from 'react';
-import { useSearchNpaMutation } from '@/modules/npa/model/hooks/useSearchNpaMutation';
 import { UseMutateFunction } from '@tanstack/react-query';
-import { NpaSearchResponse } from '@/modules/npa/model/api/searchNpa';
 import { newAxiosError } from '@/shared/api/types';
+import { CreateTaskResponse } from '@/modules/task/model/types/types';
 
 let fileInputRef: RefObject<HTMLInputElement> | null = null;
 
@@ -28,7 +27,8 @@ export const handleDocxImport = () => {
 };
 
 export const handleCheked = async (
-  searchNpa: UseMutateFunction<SearchIdResponse, newAxiosError, string, unknown>
+  searchNpa: UseMutateFunction<SearchIdResponse, newAxiosError, string, unknown>,
+  createTask?: UseMutateFunction<CreateTaskResponse, newAxiosError, FormData, unknown>
 ): Promise<File | null> => {
   if (!editorRef) {
     toast.error('Редактор не инициализирован');
@@ -36,15 +36,83 @@ export const handleCheked = async (
   }
 
   try {
+    // Проверяем, есть ли контент в редакторе
     const blocksWithoutImages = editorRef.document.filter((block) => block.type !== 'image');
+    if (blocksWithoutImages.length === 0) {
+      toast.error('Редактор пуст. Добавьте текст перед проверкой.');
+      return null;
+    }
+
     const markdownContent = await editorRef.blocksToMarkdownLossy(blocksWithoutImages);
+
     const markdownBlob = new Blob([markdownContent], { type: 'text/markdown' });
     const markdownFile = new File([markdownBlob], 'document.md', { type: 'text/markdown' });
+
+    let taskName = 'Техническое задание';
+
+    const headingBlock = editorRef.document.find(
+      (block) => block.type === 'heading' && block.content && block.content.length > 0
+    );
+
+    if (headingBlock && headingBlock.content) {
+      const headingText = headingBlock.content
+        //@ts-ignore
+        .map((item) => item.text || '')
+        .join('')
+        .trim();
+
+      if (headingText) {
+        taskName = headingText;
+      }
+    } else {
+      //@ts-ignore
+      const firstTextBlock = editorRef.document.find((block) => block.content && block.content.length > 0);
+
+      if (firstTextBlock && firstTextBlock.content) {
+        const text = firstTextBlock.content
+          //@ts-ignore
+          .map((item) => item.text || '')
+          .join('')
+          .trim();
+
+        if (text) {
+          const words = text.split(/\s+/).slice(0, 3).join(' ');
+          if (words) {
+            taskName = words;
+          }
+        }
+      }
+    }
+
+    taskName = taskName.replace(/[\/\\:*?"<>|]/g, '_').substring(0, 50);
 
     searchNpa(markdownContent, {
       onSuccess: (data) => {
         console.log('Search NPA success:', data);
         toast.success(`Заявка №${data.search_id} начала обработку`);
+
+        if (createTask) {
+          const formData = new FormData();
+          formData.append('name', taskName);
+          formData.append('file', markdownFile);
+
+          const currentDate = new Date().toISOString();
+          formData.append('created_at', currentDate);
+          formData.append('updated_at', currentDate);
+
+          createTask(formData, {
+            onSuccess: (taskData) => {
+              console.log('Task created successfully:', taskData);
+              toast.success('Техническое задание успешно создано');
+            },
+            onError: (error) => {
+              console.error('Error creating task:', error);
+              toast.error('Ошибка при создании технического задания', {
+                description: error.response?.data?.detail || 'Проверьте подключение к серверу'
+              });
+            }
+          });
+        }
       },
       onError: (error) => {
         console.error('Search NPA error:', error);
@@ -100,6 +168,7 @@ export const handleExportPDF = async () => {
 
     if (headingBlock && headingBlock.content) {
       const headingText = headingBlock.content
+        //@ts-ignore
         .map((item) => item.text || '')
         .join('')
         .trim();
@@ -108,10 +177,12 @@ export const handleExportPDF = async () => {
         filename = headingText;
       }
     } else {
+      //@ts-ignore
       const firstTextBlock = editorRef.document.find((block) => block.content && block.content.length > 0);
 
       if (firstTextBlock && firstTextBlock.content) {
         const text = firstTextBlock.content
+          //@ts-ignore
           .map((item) => item.text || '')
           .join('')
           .trim();

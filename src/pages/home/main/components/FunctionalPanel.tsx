@@ -9,12 +9,16 @@ import PdfIcon from '@/shared/assets/icons/pdf.svg?react';
 import { useSearchNpaMutation } from '@/modules/npa/model/hooks/useSearchNpaMutation';
 import { useEffect } from 'react';
 import { Loader } from '@/shared/ui/loader';
+import { UseMutateFunction } from '@tanstack/react-query';
+import { CreateTaskResponse } from '@/modules/task/model/types/types';
+import { newAxiosError } from '@/shared/api/types';
 
 interface FunctionalPanelProps {
   theme: string;
+  createTask?: UseMutateFunction<CreateTaskResponse, newAxiosError, FormData, unknown>;
 }
 
-export const FunctionalPanel = ({ theme }: FunctionalPanelProps) => {
+export const FunctionalPanel = ({ theme, createTask }: FunctionalPanelProps) => {
   const { isAuthorized } = useProfileUser();
   const { initialSearchMutation, isLoading } = useSearchNpaMutation();
   const { mutate: searchNpa } = initialSearchMutation;
@@ -22,6 +26,10 @@ export const FunctionalPanel = ({ theme }: FunctionalPanelProps) => {
   useEffect(() => {
     console.log('fetching', isLoading);
   }, [isLoading]);
+
+  const handleCheck = () => {
+    handleCheked(searchNpa, createTask);
+  };
 
   return (
     <div
@@ -46,7 +54,7 @@ export const FunctionalPanel = ({ theme }: FunctionalPanelProps) => {
         Импорт из
       </Button>
       {isAuthorized && (
-        <Button className='rounded-md' onClick={() => handleCheked(searchNpa)}>
+        <Button className='rounded-md' onClick={handleCheck}>
           Определить подходящие НПА
         </Button>
       )}

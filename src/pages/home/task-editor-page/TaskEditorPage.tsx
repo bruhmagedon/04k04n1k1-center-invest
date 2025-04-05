@@ -11,11 +11,14 @@ import { useTheme } from '@/shared/hooks/useTheme';
 
 import { FunctionalPanel } from '@/pages/home/main/components/FunctionalPanel';
 import { handleFileChange, setReferences } from '../main/utils/documentHandlers';
+import { useCreateTaskMutation } from '@/modules/task/model/hooks/useCreateTaskMutation';
 
 const TaskEditorPage = () => {
   const { id } = useParams<{ id: string }>();
   const { theme } = useTheme();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { mutate: createTask } = useCreateTaskMutation();
+
   const editor = useCreateBlockNote({
     dictionary: ru,
     domAttributes: {
@@ -51,7 +54,7 @@ const TaskEditorPage = () => {
         style={{ display: 'none' }}
       />
       <div className='absolute bottom-1 left-0 right-0 flex justify-center'>
-        <FunctionalPanel theme={theme} />
+        <FunctionalPanel theme={theme} createTask={createTask} />
       </div>
     </main>
   );
