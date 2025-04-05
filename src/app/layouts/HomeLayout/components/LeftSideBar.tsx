@@ -1,6 +1,6 @@
 import logoSvg from '@/shared/assets/logo.svg';
 import { SidebarItem } from '@/widgets/SidebarItem/SidebarItem';
-import { Search } from 'lucide-react';
+import { Search, FileQuestion } from 'lucide-react';
 import { sidebarItems } from './SidebarItems.config';
 
 export const LeftSideBar = () => {
@@ -19,10 +19,17 @@ export const LeftSideBar = () => {
         <Search className='absolute top-3.5 left-5 cursor-pointer' size={20} strokeWidth={2.5} />
       </div>
       <div className='px-2.5 mt-2.5 pb-2.5 flex flex-col gap-1 w-full overflow-y-auto'>
-        {sidebarItems.map((item) => (
-          <SidebarItem key={item.id}>{item.title}</SidebarItem>
-        ))}
-        {/* <SidebarItem>ТЗ 1</SidebarItem> */}
+        {sidebarItems.length > 0 ? (
+          sidebarItems.map((item) => (
+            <SidebarItem key={item.id}>{item.title}</SidebarItem>
+          ))
+        ) : (
+          <div className='flex flex-col items-center justify-center py-10 text-center text-gray-400'>
+            <FileQuestion size={48} className='mb-3 opacity-50' />
+            <p className='text-lg font-medium'>Нет доступных элементов</p>
+            <p className='text-sm mt-1'>Элементы появятся здесь позже</p>
+          </div>
+        )}
       </div>
     </div>
   );
