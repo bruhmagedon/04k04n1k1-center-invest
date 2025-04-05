@@ -51,24 +51,17 @@ const _MainPage = () => {
 
   const handleExportPDF = async () => {
     try {
-      // Фильтрация блоков — удаляем изображения
       const blocksWithoutImages = editor.document.filter((block) => block.type !== 'image');
-
-      // Создаём PDFExporter с фильтрованным документом
       const exporter = new PDFExporter(editor.schema, pdfDefaultSchemaMappings);
       const pdfDocument = await exporter.toReactPDFDocument(blocksWithoutImages);
-
-      // Генерация PDF
       const pdfBlob = await ReactPDF.pdf(pdfDocument).toBlob();
       const pdfUrl = URL.createObjectURL(pdfBlob);
-
       const link = document.createElement('a');
       link.href = pdfUrl;
       link.download = 'document.pdf';
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-
       URL.revokeObjectURL(pdfUrl);
     } catch (error) {
       toast.error('Ошибка при экспорте в PDF');
@@ -103,9 +96,11 @@ const _MainPage = () => {
           ),
           borderRadius: '1rem'
         }}
-        className='flex relative max-w-fit inset-x-0 mx-auto border border-transparent dark:border-white/[0.2] rounded-full z-[5000] px-2 py-2 items-center justify-center space-x-4'
+        className='flex relative max-w-fit inset-x-0 mx-auto border border-transparent dark:border-white/[0.2] rounded-full z-1 px-2 py-2 items-center justify-center space-x-4'
       >
-        <Button className='rounded-md'>Импортировать из DOCX</Button>
+        <Button className='rounded-md' onClick={handleDocxImport}>
+          Импортировать из DOCX
+        </Button>
         <Button className='rounded-md'>Определить подходящие НПА</Button>
         <NpaModal />
         <Button onClick={handleExportPDF} className='rounded-md'>
