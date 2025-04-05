@@ -1,10 +1,20 @@
 import CenterInvestLogo from '@/shared/assets/icons/logo.svg?react';
 import { SidebarItem } from '@/widgets/SidebarItem/SidebarItem';
-import { Search, FileQuestion, Pencil } from 'lucide-react';
-import { sidebarItems } from './SidebarItems.config';
-import { Button } from '@/shared/ui/button';
+import { Search, FileQuestion, Loader2 } from 'lucide-react';
+import { formatDate } from '@/shared/utils/formatDate';
+import { useNavigate } from 'react-router-dom';
+import { useTasksQuery } from '@/modules/task/model/hooks/useTasksInfiniteQuery';
 
 export const LeftSideBar = () => {
+  const navigate = useNavigate();
+  const { data, isLoading, isError } = useTasksQuery();
+
+  const tasks = data?.results || [];
+
+  const handleTaskClick = (taskId: number) => {
+    navigate(`/task/${taskId}`);
+  };
+
   return (
     <div className='bg-[#232325cc]/75 text-white min-w-[17.5rem] rounded-tl-xl overflow-hidden flex flex-col w-[20%]'>
       <div className='min-h-(--header-height) py-2.5 px-5 flex gap-2.5 items-center text-[1.55rem] border-b border-red font-bold'>
@@ -30,9 +40,29 @@ export const LeftSideBar = () => {
             Создать шаблон для ТЗ
           </Button>
         </div> */}
-        {/* TODO: Заготовка под получение технических задач с сервера */}
-        {sidebarItems.length > 0 ? (
-          sidebarItems.map((item) => <SidebarItem key={item.id}>{item.title}</SidebarItem>)
+
+        {isLoading ? (
+          <div className='flex justify-center items-center py-10'>
+            <Loader2 className='animate-spin' size={24} />
+          </div>
+        ) : isError ? (
+          <div className='flex flex-col items-center mt-[30%] justify-center py-10 text-center text-gray-400'>
+            <p className='text-lg font-medium'>Ошибка загрузки заданий</p>
+            <p className='text-sm mt-1'>Попробуйте обновить страницу</p>
+          </div>
+        ) : tasks.length > 0 ? (
+          <>
+            {tasks.map((task) => (
+              <div key={task.id} onClick={() => handleTaskClick(task.id)}>
+                <SidebarItem>
+                  <div className='flex flex-col w-full'>
+                    <div className='font-medium truncate'>{task.name}</div>
+                    <div className='text-xs text-gray-400 mt-1'>{formatDate(new Date(task.created_at))}</div>
+                  </div>
+                </SidebarItem>
+              </div>
+            ))}
+          </>
         ) : (
           <div className='flex flex-col items-center mt-[65%] justify-center py-10 text-center text-gray-400'>
             <FileQuestion size={48} className='mb-3 opacity-50' />

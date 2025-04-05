@@ -16,15 +16,15 @@ export const homeRoutes = {
     element: <LoginPage />
   } satisfies RouteObject,
   register: {
-    path: '/register',
+    path: '/task/:id/register',
     element: <RegisterPage />
   } satisfies RouteObject,
-  verification:{
-    path: '/verification',
+  verification: {
+    path: '/task/:id/verification',
     element: <VerificationPage />
   } satisfies RouteObject,
-  recommendedNpa:{
-    path: '/recommended-npa',
+  recommendedNpa: {
+    path: '/task/:id/recommended-npa',
     element: <RecommendedNpaPage />
   } satisfies RouteObject
 };
