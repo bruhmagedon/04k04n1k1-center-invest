@@ -2,6 +2,7 @@ import { FormControl, FormField, FormItem, FormLabel } from '@/shared/ui/form';
 import { Checkbox } from '@/shared/ui/checkbox';
 import { UseFormReturn } from 'react-hook-form';
 import { NpaItem } from '@/widgets/NpaModal/types';
+import { FileQuestion } from 'lucide-react';
 
 interface NpaListProps {
   items: NpaItem[];
@@ -15,9 +16,17 @@ export const NpaList = ({ items, form, maxSelection }: NpaListProps) => (
     name='items'
     render={() => (
       <div className='grid grid-cols-1 md:grid-cols-1 gap-4'>
-        {items.map((item) => (
-          <NpaListItem key={item.id} item={item} form={form} maxSelection={maxSelection} />
-        ))}
+        {items.length > 0 ? (
+          items.map((item) => (
+            <NpaListItem key={item.id} item={item} form={form} maxSelection={maxSelection} />
+          ))
+        ) : (
+          <div className='flex flex-col items-center justify-center py-10 text-center text-muted-foreground  rounded-lg'>
+            <FileQuestion size={48} className='mb-3 opacity-50' />
+            <p className='text-lg font-medium'>Нет подходящих НПА</p>
+            <p className='text-sm mt-1'>Попробуйте изменить параметры поиска</p>
+          </div>
+        )}
       </div>
     )}
   />

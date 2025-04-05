@@ -4,6 +4,7 @@ import { Tabs, TabsList, TabsTrigger } from '@/shared/ui/tabs';
 import { AllDialog } from '@/widgets/AuthDialog/OurDialog';
 import { LoginForm } from '@/widgets/Header/components/LoginForm/LoginForm';
 import { RegisterForm } from '@/widgets/Header/components/RegisterForm/RegisterForm';
+import { NpaCreateModal } from '@/widgets/NpaCreateModal/NpaCreateModal';
 import { NpaModal } from '@/widgets/NpaModal/NpaModal';
 import { ThemeSwitcher } from '@/widgets/ThemeSwitcher/ThemeSwitcher';
 import { CircleUserRound, SquarePlus } from 'lucide-react';
@@ -17,6 +18,7 @@ export const HomeHeader = () => {
         <Button prefix={<SquarePlus size={16} />}>
           <span>Создать ТЗ</span>
         </Button>
+        <NpaCreateModal/>
         
       </div>
       <TabsList className='flex '>

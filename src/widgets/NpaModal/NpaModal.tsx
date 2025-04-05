@@ -41,6 +41,7 @@ export function NpaModal() {
   });
 
   const selectedCount = Math.min(form.watch('items')?.length || 0, MAX_SELECTION);
+  const isEmptyList = paginatedItems.length === 0;
 
   const handleSubmit = (data: z.infer<typeof FormSchema>) => {
     if (data.items.length > MAX_SELECTION) {
@@ -59,15 +60,17 @@ export function NpaModal() {
           <form onSubmit={form.handleSubmit(handleSubmit)} className='space-y-4'>
             <NpaList items={paginatedItems} form={form} maxSelection={MAX_SELECTION} />
 
-            <div className=' bottom-0  pt-4'>
-              <PaginationControl
-                currentPage={currentPage}
-                totalPages={totalPages}
-                onPageChange={setCurrentPage}
-              />
+            <div className='bottom-0 pt-4'>
+              {!isEmptyList && (
+                <PaginationControl
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={setCurrentPage}
+                />
+              )}
               <Button
                 type='submit'
-                disabled={form.watch('items')?.length > MAX_SELECTION}
+                disabled={form.watch('items')?.length > MAX_SELECTION || isEmptyList}
                 className='mt-2.5 w-full'
               >
                 Подтвердить выбор ({selectedCount})
