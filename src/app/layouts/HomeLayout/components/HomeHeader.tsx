@@ -1,7 +1,9 @@
 import { Button } from '@/shared/ui/button';
+import { DialogFooter, DialogHeader } from '@/shared/ui/dialog';
 import { Tabs, TabsList, TabsTrigger } from '@/shared/ui/tabs';
 import { AllDialog } from '@/widgets/AuthDialog/OurDialog';
 import { LoginForm } from '@/widgets/Header/components/LoginForm/LoginForm';
+import { RegisterForm } from '@/widgets/Header/components/RegisterForm/RegisterForm';
 import { NpaModal } from '@/widgets/NpaModal/NpaModal';
 import { ThemeSwitcher } from '@/widgets/ThemeSwitcher/ThemeSwitcher';
 import { CircleUserRound, SquarePlus } from 'lucide-react';
@@ -21,8 +23,9 @@ export const HomeHeader = () => {
         <TabsTrigger value='Редактор'>Редактор</TabsTrigger>
         <TabsTrigger value='Проверка'>Проверка</TabsTrigger>
       </TabsList>
-      <Tabs defaultValue='Редактор' className='flex flex-row gap-2.5 justify-end'>
+      <Tabs defaultValue='Авторизация' className='flex flex-row gap-2.5 justify-end'>
         {/* <Button prefix={<Copy size={16} />}>Копировать</Button> */}
+
         <AllDialog
           triggerIcon={<CircleUserRound size={16} />}
           triggerText='Вход'
@@ -30,7 +33,18 @@ export const HomeHeader = () => {
           isOpen={isOpen}
           setIsOpen={setIsOpen}
         >
-          <LoginForm onSuccess={() => window.location.reload()} />
+          <DialogHeader>
+            <TabsList>
+              <TabsTrigger className='hover:bg-background' value='Авторизация'>
+                Авторизация
+              </TabsTrigger>
+              <TabsTrigger className='hover:bg-background' value='Регистрация'>
+                Регистрация
+              </TabsTrigger>
+            </TabsList>
+          </DialogHeader>
+          <LoginForm triggerValue='Авторизация' onSuccess={() => window.location.reload()} />
+          <RegisterForm triggerValue='Регистрация' />
         </AllDialog>
         <ThemeSwitcher />
       </Tabs>

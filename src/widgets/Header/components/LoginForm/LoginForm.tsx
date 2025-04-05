@@ -10,6 +10,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/shared/ui/input';
 import { Loader } from '@/shared/ui/loader';
 import { toast } from 'sonner';
+import { TabsContent, TabsList, TabsTrigger } from '@/shared/ui/tabs';
 
 const loginSchema = z.object({
   email: z.string().email({
@@ -19,8 +20,11 @@ const loginSchema = z.object({
     message: 'Пароль должен быть длиннее 2 символов'
   })
 });
-
-export function LoginForm({ onSuccess }: { onSuccess?: () => void }) {
+export interface LoginFormProps {
+  onSuccess?: () => void,
+  triggerValue: string
+}
+export function LoginForm({ onSuccess,  triggerValue }: LoginFormProps) {
   const { mutate, isPending } = useLoginMutation();
   const [isVisible, setIsVisible] = useState(false);
 
@@ -48,7 +52,8 @@ export function LoginForm({ onSuccess }: { onSuccess?: () => void }) {
   return (
     <Form {...form}>
       <form className='space-y-6' onSubmit={form.handleSubmit(onSubmit)}>
-        <FormField
+      <TabsContent value={triggerValue}>
+      <FormField
           name='email'
           control={form.control}
           render={({ field }) => (
@@ -84,10 +89,15 @@ export function LoginForm({ onSuccess }: { onSuccess?: () => void }) {
             </FormItem>
           )}
         />
-
+        
         <Button type='submit' disabled={isPending} className='w-full'>
           {isPending ? <Loader className='w-4 h-4' /> : 'Войти'}
         </Button>
+        
+      </TabsContent>
+        
+       
+        
       </form>
     </Form>
   );

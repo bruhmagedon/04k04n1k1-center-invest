@@ -14,6 +14,7 @@ import { Input } from '@/shared/ui/input';
 import { Loader } from '@/shared/ui/loader';
 import { toast } from 'sonner';
 import { usePasswordVisible } from '@/widgets/Header/components/RegisterForm/utils/useChangeVisible';
+import { TabsContent } from '@/shared/ui/tabs';
 
 const registerSchema = z.object({
   username: z.string().min(2),
@@ -21,8 +22,11 @@ const registerSchema = z.object({
   password: z.string().min(6),
   confirmPassword: z.string().min(6)
 });
-
-export function RegisterForm({ onSuccess }: { onSuccess?: () => void }) {
+export interface RegisterFormProps {
+  onSuccess?: () => void,
+  triggerValue: string
+}
+export function RegisterForm({ onSuccess, triggerValue }: RegisterFormProps) {
   const { mutate, isPending } = useRegisterMutation();
   const { visibleButton, inputType } = usePasswordVisible();
 
@@ -57,7 +61,8 @@ export function RegisterForm({ onSuccess }: { onSuccess?: () => void }) {
   return (
     <Form {...form}>
       <form className=' space-y-6' onSubmit={form.handleSubmit(onSubmit)}>
-        <FormField
+      <TabsContent value={triggerValue}>
+      <FormField
           render={({ field }) => (
             <FormItem>
               <FormLabel>Логин</FormLabel>
@@ -116,10 +121,13 @@ export function RegisterForm({ onSuccess }: { onSuccess?: () => void }) {
           control={form.control}
         />
         <div className='flex gap-2'>
-          <Button className='min-w-28.5' disabled={isPending} type='submit'>
+          <Button className='min-w-28.5 w-full' disabled={isPending} type='submit'>
             {isPending ? <Loader className='w-4 h-4' /> : 'Регистрация'}
           </Button>
         </div>
+      </TabsContent>
+       
+        
       </form>
     </Form>
   );
