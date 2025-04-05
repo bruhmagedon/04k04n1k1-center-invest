@@ -1,0 +1,62 @@
+@startuml
+skinparam wrapWidth 200
+skinparam defaultTextAlignment center
+skinparam style strictuml
+
+actor Customer
+actor Expert
+participant Front
+participant Back
+
+== Начало работы пользователя ==
+
+Customer -> Front : Заходит на сайт
+
+alt Есть написанное ТЗ в doc?
+    Customer -> Front : Загружает файл с ТЗ
+else
+    Customer -> Front : Пишет ТЗ в редакторе
+end
+
+alt Что нужно сделать с ТЗ?
+    
+    === Получение релевантных НПА ===
+    Customer -> Front : Нажимает "Определить подходящие НПА"
+    Front -> Back : Отправляет текст ТЗ
+    Back -> Back : Обогащает текст, извлекает ключевые слова (ИИ Deepseek)
+    Back -> Back : Извлекает ключевые слова из НПА (ИИ Deepseek)
+    Back -> Back : Генерирует ID запроса
+    note left: Это делаем из-за того, что запрос может долго обрабатываться и его может прервать прокси
+    Back --> Front : ID запроса
+    Back -> Back : Сравнение ТЗ с НПА по ключевым словам
+    Front -> Back : Отправка ID запроса
+    Back -> Front : Список релевантных НПА и ссылки
+    Front -> Customer : Отображает вкладку "Рекомендованные НПА"
+
+    === Проверка учтенных норм НПА ===
+    Customer -> Front : Выбирает проверку по конкретным НПА
+    Front -> Back : Отправляет текст ТЗ и список НПА
+    Back -> Back : Сравнивает ТЗ с нормами выбранных НПА
+    Back -> Front : Возвращает список ошибок и комментарии
+    Front -> Customer : Показывает выделенные участки и замечания
+    Customer -> Customer : Редактирует текст согласно замечаниям
+
+    Customer -> Front : Отправляет ТЗ на проверку эксперту
+
+    alt Принято экспертом
+        Back -> Customer : Accept и разрешение на разработку
+    else
+        Back -> Customer : Reject и комментарии эксперта
+        Customer -> Customer : Повторная правка ТЗ
+        Customer -> Front : Снова отправляет эксперту
+    end
+
+    === Интерфейс эксперта ===
+    Back -> Front : Передает файл на проверку
+    Front -> Expert : Открывает текст с возможностью выделения и комментирования
+    Expert -> Expert : Проверка и аннотация ТЗ
+    Expert -> Back : Accept / Reject с комментариями
+
+end
+
+@enduml
