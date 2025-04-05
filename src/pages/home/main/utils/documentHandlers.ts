@@ -36,20 +36,20 @@ export const handleCheked = async (
   }
 
   try {
-    const markdownContent = await editorRef.blocksToMarkdownLossy(editorRef.document);
-
+    const blocksWithoutImages = editorRef.document.filter((block) => block.type !== 'image');
+    const markdownContent = await editorRef.blocksToMarkdownLossy(blocksWithoutImages);
     const markdownBlob = new Blob([markdownContent], { type: 'text/markdown' });
     const markdownFile = new File([markdownBlob], 'document.md', { type: 'text/markdown' });
 
     searchNpa(markdownContent, {
       onSuccess: (data) => {
         console.log('Search NPA success:', data);
-        toast.success(`Найдено ${data.total} подходящих НПА`);
+        toast.success(`Заявка №${data.search_id} начала обработку`);
       },
       onError: (error) => {
         console.error('Search NPA error:', error);
         toast.error('Ошибка при поиске НПА', {
-          description: error.response?.data?.detail || 'Проверьте подключение к серверу'
+          description: 'Вы отправили пустое техническое задание или произошла ошибка на сервере'
         });
       }
     });
