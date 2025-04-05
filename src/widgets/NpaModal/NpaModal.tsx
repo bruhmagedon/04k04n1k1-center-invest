@@ -12,7 +12,8 @@ import { AllDialog } from '@/widgets/AuthDialog/OurDialog';
 import { NpaSearch } from '@/widgets/NpaModal/components/NpaSearch';
 import { NpaList } from '@/widgets/NpaModal/components/NpaList';
 import { useNpaData } from '@/widgets/NpaModal/components/useNpaData';
-
+import { useProfileUser } from '@/shared/hooks/useProfileUser';
+import { useLogout } from '@/shared/hooks/useLogout';
 
 const MAX_SELECTION = 10;
 const PAGE_SIZE = 10;
@@ -26,6 +27,7 @@ const FormSchema = z.object({
 
 export function NpaModal() {
   const [currentPage, setCurrentPage] = useState(1);
+
   const [searchTerm, setSearchTerm] = useState('');
   const [isOpen, setIsOpen] = useState(false);
 

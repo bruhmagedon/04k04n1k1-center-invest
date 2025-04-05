@@ -1,16 +1,20 @@
 import { useGetUserQuery } from '@/modules/user/model/hooks/useGetUserQuery';
-
 import { queryClient } from '../api/query-client';
 
 export const useProfileUser = () => {
-  const { queryKey } = useGetUserQuery();
-  const profileState = queryClient.getQueriesData({ queryKey });
+  // Получаем данные из кэша или из запроса
+  const { data, isLoading, isError } = useGetUserQuery();
 
-  const data = profileState?.data;
+  // Альтернативный способ получения данных из кэша
+  const cachedData = queryClient.getQueryData(['user']);
 
-  if (!data) {
-    throw new Error('ProfileUser data is undefined');
-  }
+  // Используем данные из запроса или из кэша
+  const userData = data || cachedData;
 
-  return { profileUser: data, isAuthorized: Boolean(data) };
+  return {
+    profileUser: userData,
+    isAuthorized: Boolean(userData),
+    isLoading,
+    isError
+  };
 };

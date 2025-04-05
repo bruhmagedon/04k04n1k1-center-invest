@@ -30,11 +30,14 @@ const registerSchema = z.object({
     message: 'Пароль должен содержать минимум 6 символов'
   })
 });
+
 export interface RegisterFormProps {
-  onSuccess?: () => void,
-  triggerValue: string
+  onSuccess?: () => void;
+  triggerValue: string;
+  onModalClose: () => void;
 }
-export function RegisterForm({ onSuccess, triggerValue }: RegisterFormProps) {
+
+export function RegisterForm({ onSuccess, triggerValue, onModalClose }: RegisterFormProps) {
   const { mutate, isPending } = useRegisterMutation();
   const { visibleButton, inputType } = usePasswordVisible();
 
@@ -58,6 +61,7 @@ export function RegisterForm({ onSuccess, triggerValue }: RegisterFormProps) {
       onSuccess: () => {
         form.reset();
         toast.success('Успешная регистрация');
+        onModalClose();
         onSuccess?.();
       },
       onError: (error) => {
@@ -69,73 +73,71 @@ export function RegisterForm({ onSuccess, triggerValue }: RegisterFormProps) {
   return (
     <Form {...form}>
       <form className='' onSubmit={form.handleSubmit(onSubmit)}>
-      <TabsContent className=' space-y-2 gap-3 flex flex-col' value={triggerValue}>
-      <FormField
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Логин</FormLabel>
-              <FormControl>
-                <Input placeholder='Введите логин' {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-          name='username'
-          control={form.control}
-        />
-        <FormField
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Email</FormLabel>
-              <FormControl>
-                <Input type='text' placeholder='Введите Email' {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-          name='email'
-          control={form.control}
-        />
-        <FormField
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Пароль</FormLabel>
-              <FormControl>
-                <div className='relative'>
-                  <Input type={inputType} placeholder='Введите пароль' {...field} />
-                  {visibleButton}
-                </div>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-          name='password'
-          control={form.control}
-        />
-        <FormField
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Подтвердите пароль</FormLabel>
-              <FormControl>
-                <div className='relative'>
-                  <Input type={inputType} placeholder='Введите пароль' {...field} />
-                  {visibleButton}
-                </div>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-          name='confirmPassword'
-          control={form.control}
-        />
-        <div className='flex gap-2'>
-          <Button className='min-w-28.5 w-full' disabled={isPending} type='submit'>
-            {isPending ? <Loader className='w-4 h-4' /> : 'Регистрация'}
-          </Button>
-        </div>
-      </TabsContent>
-       
-        
+        <TabsContent className=' space-y-2 gap-3 flex flex-col' value={triggerValue}>
+          <FormField
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Логин</FormLabel>
+                <FormControl>
+                  <Input placeholder='Введите логин' {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+            name='username'
+            control={form.control}
+          />
+          <FormField
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Email</FormLabel>
+                <FormControl>
+                  <Input type='text' placeholder='Введите Email' {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+            name='email'
+            control={form.control}
+          />
+          <FormField
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Пароль</FormLabel>
+                <FormControl>
+                  <div className='relative'>
+                    <Input type={inputType} placeholder='Введите пароль' {...field} />
+                    {visibleButton}
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+            name='password'
+            control={form.control}
+          />
+          <FormField
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Подтвердите пароль</FormLabel>
+                <FormControl>
+                  <div className='relative'>
+                    <Input type={inputType} placeholder='Введите пароль' {...field} />
+                    {visibleButton}
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+            name='confirmPassword'
+            control={form.control}
+          />
+          <div className='flex gap-2'>
+            <Button className='min-w-28.5 w-full' disabled={isPending} type='submit'>
+              {isPending ? <Loader className='w-4 h-4' /> : 'Зарегистрироваться'}
+            </Button>
+          </div>
+        </TabsContent>
       </form>
     </Form>
   );

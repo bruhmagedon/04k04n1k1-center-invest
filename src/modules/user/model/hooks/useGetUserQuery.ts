@@ -5,13 +5,15 @@ import { IUser } from '@/modules/user/model/types/user';
 import { newAxiosError } from '@/shared/api/types';
 import { useTokenStore } from '@/modules/auth/model/store/authStore';
 
-// TODO: Заготовка под получение юзера
-export const useGetUserQuery = () => {
+export const useGetUserQuery = (options = {}) => {
   const { accessToken } = useTokenStore();
+  const hasToken = !!accessToken || !!localStorage.getItem('token-storage');
 
   return useQuery<IUser, newAxiosError>({
     queryKey: ['user'],
     queryFn: getUser,
-    enabled: !!accessToken
+    enabled: hasToken,
+    staleTime: 5 * 60 * 1000, // 5 минут
+    ...options
   });
 };

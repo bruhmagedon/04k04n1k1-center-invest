@@ -20,11 +20,13 @@ const loginSchema = z.object({
     message: 'Пароль должен быть длиннее 2 символов'
   })
 });
+
 export interface LoginFormProps {
-  onSuccess?: () => void,
-  triggerValue: string
+  onSuccess?: () => void;
+  triggerValue: string;
 }
-export function LoginForm({ onSuccess,  triggerValue }: LoginFormProps) {
+
+export function LoginForm({ onSuccess, triggerValue }: LoginFormProps) {
   const { mutate, isPending } = useLoginMutation();
   const [isVisible, setIsVisible] = useState(false);
 
@@ -51,53 +53,49 @@ export function LoginForm({ onSuccess,  triggerValue }: LoginFormProps) {
 
   return (
     <Form {...form}>
-      <form className='h-full flex '  onSubmit={form.handleSubmit(onSubmit)}>
-      <TabsContent className='space-y-2 gap-3 flex flex-col mt-4' value={triggerValue}>
-      <FormField
-          name='email'
-          control={form.control}
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Email</FormLabel>
-              <FormControl>
-                <Input placeholder='Введите Email' {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+      <form className='h-full flex ' onSubmit={form.handleSubmit(onSubmit)}>
+        <TabsContent className='space-y-2 gap-3 flex flex-col mt-4' value={triggerValue}>
+          <FormField
+            name='email'
+            control={form.control}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Email</FormLabel>
+                <FormControl>
+                  <Input placeholder='Введите Email' {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-        <FormField
-          name='password'
-          control={form.control}
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Пароль</FormLabel>
-              <FormControl>
-                <div className='relative'>
-                  <Input type={isVisible ? 'text' : 'password'} placeholder='Введите пароль' {...field} />
-                  <button
-                    type='button'
-                    className='absolute right-2 top-2.5'
-                    onClick={() => setIsVisible(!isVisible)}
-                  >
-                    {isVisible ? <EyeOff size={20} /> : <Eye size={20} />}
-                  </button>
-                </div>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        
-        <Button type='submit' disabled={isPending} className='w-full absolute bottom-0'>
-          {isPending ? <Loader className='w-4 h-4' /> : 'Войти'}
-        </Button>
-        
-      </TabsContent>
-        
-       
-        
+          <FormField
+            name='password'
+            control={form.control}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Пароль</FormLabel>
+                <FormControl>
+                  <div className='relative'>
+                    <Input type={isVisible ? 'text' : 'password'} placeholder='Введите пароль' {...field} />
+                    <button
+                      type='button'
+                      className='absolute right-2 top-2.5'
+                      onClick={() => setIsVisible(!isVisible)}
+                    >
+                      {isVisible ? <EyeOff size={20} /> : <Eye size={20} />}
+                    </button>
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <Button type='submit' disabled={isPending} className='w-full absolute bottom-0'>
+            {isPending ? <Loader className='w-4 h-4' /> : 'Войти'}
+          </Button>
+        </TabsContent>
       </form>
     </Form>
   );

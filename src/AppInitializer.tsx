@@ -1,28 +1,26 @@
 // import { profileUserAPI } from '@app/api/profile';
 
 import { RouterProvider } from './app/router/RouterProvider';
+import { useTokenStore } from './modules/auth/model/store/authStore';
+import { useGetUserQuery } from './modules/user/model/hooks/useGetUserQuery';
 import { PageLoader } from './shared/ui/loader';
 
 export const AppInitializer = () => {
-  const shouldFetchProfile = Boolean(localStorage.getItem('shouldFetchProfile'));
+  const { accessToken } = useTokenStore();
+  const shouldFetchProfile = Boolean(accessToken) || Boolean(localStorage.getItem('token-storage'));
 
-  // Если пользователь не авторизован, пропускаем запрос к профилю
-  // const { isFetching, isError } = profileUserAPI.useGetProfileUserQuery(undefined, {
-  //   skip: !shouldFetchProfile
-  // });
+  const { isLoading, isError } = useGetUserQuery({
+    enabled: shouldFetchProfile,
+    retry: 1
+  });
 
-  const { isFetching, isError } = { isFetching: false, isError: false };
-
-  if (shouldFetchProfile && isFetching) {
+  if (shouldFetchProfile && isLoading) {
     return <PageLoader />;
   }
 
-  // Ошибка запроса профиля
   if (shouldFetchProfile && isError) {
-    console.warn('Error fetching profile user');
-    localStorage.removeItem('shouldFetchProfile');
+    console.warn('Ошибка при получении данных пользователя');
   }
 
-  // Если пользователь не авторизован или данные уже загружены
   return <RouterProvider />;
 };

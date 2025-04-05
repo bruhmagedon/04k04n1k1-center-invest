@@ -6,13 +6,14 @@ interface TokenState {
   refreshToken: string | null;
   clearAccessToken: () => void;
   clearRefreshToken: () => void;
+  clearAllTokens: () => void;
   setAccessToken: (token: string | null) => void;
   setRefreshToken: (token: string | null) => void;
 }
 
 export const useTokenStore = create(
   persist<TokenState>(
-    (set) => ({
+    (set, get, api) => ({
       accessToken: null,
       refreshToken: null,
       setAccessToken: (token: string | null) => {
@@ -26,6 +27,11 @@ export const useTokenStore = create(
       },
       clearRefreshToken: () => {
         set({ refreshToken: null });
+      },
+      clearAllTokens: () => {
+        set({ accessToken: null, refreshToken: null });
+        localStorage.removeItem('token-storage');
+        api.persist.clearStorage();
       }
     }),
     {
