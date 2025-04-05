@@ -13,7 +13,7 @@ import { SquarePlus, Upload } from 'lucide-react';
 
 const FormSchema = z.object({
   title: z.string().min(3, 'Название должно содержать минимум 3 символа'),
-  link: z.string().url('Введите корректную ссылку')
+  link: z.string().min(3,'Ссылка должна содержать минимум 3 символа')
 });
 
 type FormValues = z.infer<typeof FormSchema> & {
@@ -116,12 +116,12 @@ export function NpaCreateModal() {
                   />
                   <Button
                     type="button"
-                    
+                    prefix={  <Upload className="mr-2 h-4 w-4" />}
                     onClick={() => document.getElementById('file-upload')?.click()}
-                    className="w-full"
+                    className="w-full flex"
                     disabled={isUploading}
                   >
-                    <Upload className="mr-2 h-4 w-4" />
+                  
                     {isUploading ? 'Загрузка...' : 'Загрузить документ'}
                   </Button>
                 </div>

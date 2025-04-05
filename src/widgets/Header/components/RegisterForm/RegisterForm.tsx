@@ -17,10 +17,18 @@ import { usePasswordVisible } from '@/widgets/Header/components/RegisterForm/uti
 import { TabsContent } from '@/shared/ui/tabs';
 
 const registerSchema = z.object({
-  username: z.string().min(2),
-  email: z.string().email(),
-  password: z.string().min(6),
-  confirmPassword: z.string().min(6)
+  username: z.string().min(2, {
+    message: 'Логин должен содержать минимум 2 символа'
+  }),
+  email: z.string().email({
+    message: 'Введите корректный email адрес'
+  }),
+  password: z.string().min(6, {
+    message: 'Пароль должен содержать минимум 6 символов'
+  }),
+  confirmPassword: z.string().min(6, {
+    message: 'Пароль должен содержать минимум 6 символов'
+  })
 });
 export interface RegisterFormProps {
   onSuccess?: () => void,
