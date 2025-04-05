@@ -7,6 +7,8 @@ import { useProfileUser } from '@/shared/hooks/useProfileUser';
 import DocxIcon from '@/shared/assets/icons/docx.svg?react';
 import PdfIcon from '@/shared/assets/icons/pdf.svg?react';
 import { useSearchNpaMutation } from '@/modules/npa/model/hooks/useSearchNpaMutation';
+import { useEffect } from 'react';
+import { Loader } from '@/shared/ui/loader';
 
 interface FunctionalPanelProps {
   theme: string;
@@ -14,8 +16,13 @@ interface FunctionalPanelProps {
 
 export const FunctionalPanel = ({ theme }: FunctionalPanelProps) => {
   const { isAuthorized } = useProfileUser();
-  const { initialSearchMutation} = useSearchNpaMutation();
-  const {mutate: searchNpa } = initialSearchMutation;
+  const { initialSearchMutation, isLoading } = useSearchNpaMutation();
+  const { mutate: searchNpa } = initialSearchMutation;
+
+  useEffect(() => {
+    console.log('fetching', isLoading);
+  }, [isLoading]);
+
   return (
     <div
       style={{
@@ -34,10 +41,15 @@ export const FunctionalPanel = ({ theme }: FunctionalPanelProps) => {
       }}
       className='flex relative max-w-fit mb-4 inset-x-0 mx-auto border border-transparent dark:border-white/[0.2] rounded-full z-1 px-2 py-2 items-center justify-center space-x-4'
     >
+      {isLoading && <Loader />}
       <Button className='rounded-md' onClick={handleDocxImport} postfix={<DocxIcon className='size-8' />}>
         Импорт из
       </Button>
-      {isAuthorized && <Button className='rounded-md' onClick={() => handleCheked(searchNpa)}>Определить подходящие НПА</Button>}
+      {isAuthorized && (
+        <Button className='rounded-md' onClick={() => handleCheked(searchNpa)}>
+          Определить подходящие НПА
+        </Button>
+      )}
       {isAuthorized && <NpaModal />}
       <Button onClick={handleExportPDF} className='rounded-md' postfix={<PdfIcon className='size-8' />}>
         Экспорт в

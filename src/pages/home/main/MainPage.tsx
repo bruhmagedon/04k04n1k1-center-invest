@@ -14,7 +14,6 @@ const _MainPage = () => {
         <p className='text-muted-foreground mb-8'>
           Для начала работы выберите существующую задачу из списка слева или создайте новую задачу.
         </p>
-
         <div className='flex gap-4 justify-center'>
           <Button className='rounded-md' postfix={<Plus size={16} />}>
             Создать новую задачу

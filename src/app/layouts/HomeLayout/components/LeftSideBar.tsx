@@ -30,6 +30,7 @@ export const LeftSideBar = () => {
             Создать шаблон для ТЗ
           </Button>
         </div> */}
+        {/* TODO: Заготовка под получение технических задач с сервера */}
         {sidebarItems.length > 0 ? (
           sidebarItems.map((item) => <SidebarItem key={item.id}>{item.title}</SidebarItem>)
         ) : (
