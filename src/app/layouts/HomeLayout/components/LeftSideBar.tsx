@@ -2,7 +2,7 @@ import logoSvg from '@/shared/assets/logo.svg';
 import { Search } from 'lucide-react';
 export const LeftSideBar = () => {
   return (
-    <div className='bg-[#232325cc]/75 min-w-[17.5rem] rounded-l-xl overflow-hidden'>
+    <div className='bg-[#232325cc]/75 min-w-[17.5rem] rounded-tl-xl overflow-hidden'>
       <div className='h-15 py-2.5 px-5 flex gap-2.5 items-center text-[1.55rem] font-bold'>
         <img src={logoSvg} alt='' />
         <span>Зайти в туза</span>

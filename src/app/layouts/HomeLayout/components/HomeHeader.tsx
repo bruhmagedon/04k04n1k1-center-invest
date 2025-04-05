@@ -2,7 +2,7 @@ import { Button } from '@/shared/ui/button';
 import { TabsList, TabsTrigger } from '@/shared/ui/tabs';
 import { NpaModal } from '@/widgets/NpaModal/NpaModal';
 import { ThemeSwitcher } from '@/widgets/ThemeSwitcher/ThemeSwitcher';
-import { CircleUserRound, Copy, Notebook, SquarePlus } from 'lucide-react';
+import { CircleUserRound, SquarePlus } from 'lucide-react';
 
 export const HomeHeader = () => {
   return (
