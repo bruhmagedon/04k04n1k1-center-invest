@@ -42,13 +42,11 @@ export const HomeHeader = () => {
         </Button>
         {isTaskEditPage && <NpaCreateModal />}
       </div>
-      {isTaskEditPage && (
-        <TabsList className='flex '>
+      <TabsList className='flex'>
           <TabsTrigger value='Редактор'>Редактор</TabsTrigger>
           {isAuthorized && <TabsTrigger value='Проверка'>Проверка</TabsTrigger>}
           {isAuthorized && <TabsTrigger value='Рекомендуемые НПА'>Рекомендуемые НПА</TabsTrigger>}
         </TabsList>
-      )}
       <Tabs defaultValue='Авторизация' className='flex flex-row gap-2.5 justify-end'>
         <AllDialog
           triggerIcon={!isAuthorized && <CircleUserRound size={16} />}
