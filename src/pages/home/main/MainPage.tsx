@@ -38,7 +38,6 @@ const _MainPage = () => {
           className='from-transparent via-green-500 to-transparent '
         />
       </div>
-
       <div>
         <Button>Сохранить</Button>
       </div>
