@@ -9,13 +9,10 @@ import '@blocknote/mantine/style.css';
 import { useTheme } from '@/shared/hooks/useTheme';
 
 import { Button } from '@/shared/ui/button';
-import { NpaModal } from '@/widgets/NpaModal/NpaModal';
-import { ShineBorder } from '@/shared/ui/shine-border';
 import { cn } from '@/shared/utils/cn';
 import { PDFExporter, pdfDefaultSchemaMappings } from '@blocknote/xl-pdf-exporter';
 import * as ReactPDF from '@react-pdf/renderer';
-
-// Use react-pdf to write to file:
+import { toast } from 'sonner';
 
 const _MainPage = () => {
   const { theme } = useTheme();
@@ -24,7 +21,7 @@ const _MainPage = () => {
     dictionary: ru,
     domAttributes: {
       editor: {
-        class: 'w-full h-[75vh] py-5 overflow-auto bg-background!'
+        class: 'max-w-full h-[75vh] py-5 overflow-auto bg-background!'
       }
     }
   });
@@ -51,22 +48,19 @@ const _MainPage = () => {
     }
   };
 
-  // Create the exporter
-  const exporter = new PDFExporter(editor.schema, pdfDefaultSchemaMappings);
-
   const handleExportPDF = async () => {
     try {
-      // Создаем экспортер
+      // Фильтрация блоков — удаляем изображения
+      const blocksWithoutImages = editor.document.filter((block) => block.type !== 'image');
+
+      // Создаём PDFExporter с фильтрованным документом
       const exporter = new PDFExporter(editor.schema, pdfDefaultSchemaMappings);
+      const pdfDocument = await exporter.toReactPDFDocument(blocksWithoutImages);
 
-      // Конвертируем документ в PDF
-      const pdfDocument = await exporter.toReactPDFDocument(editor.document);
-
-      // Генерируем PDF и скачиваем
+      // Генерация PDF
       const pdfBlob = await ReactPDF.pdf(pdfDocument).toBlob();
       const pdfUrl = URL.createObjectURL(pdfBlob);
 
-      // Создаем временную ссылку для скачивания
       const link = document.createElement('a');
       link.href = pdfUrl;
       link.download = 'document.pdf';
@@ -74,20 +68,18 @@ const _MainPage = () => {
       link.click();
       document.body.removeChild(link);
 
-      // Освобождаем память
       URL.revokeObjectURL(pdfUrl);
     } catch (error) {
+      toast.error('Ошибка при экспорте в PDF');
       console.error('Error exporting PDF:', error);
-      // Здесь можно добавить обработку ошибок (например, показать уведомление)
     }
   };
+
   return (
     <main className='flex flex-1 flex-col gap-12 px-6 sm:px-16 h-full items-center mt-5 overflow-hidden'>
       <div className='relative w-full rounded-[0.375rem]'>
         <BlockNoteView theme={theme as Theme} editor={editor} />
       </div>
-
-      {/* Hidden file input */}
       <input
         type='file'
         ref={fileInputRef}
@@ -95,7 +87,6 @@ const _MainPage = () => {
         accept='.docx'
         style={{ display: 'none' }}
       />
-
       <div
         style={{
           border: '0.125rem solid transparent',
