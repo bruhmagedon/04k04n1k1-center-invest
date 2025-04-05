@@ -30,15 +30,15 @@ export const FunctionalPanel = ({ theme }: FunctionalPanelProps) => {
         ),
         borderRadius: '1rem'
       }}
-      className='flex relative max-w-fit inset-x-0 mx-auto border border-transparent dark:border-white/[0.2] rounded-full z-1 px-2 py-2 items-center justify-center space-x-4'
+      className='flex relative max-w-fit mb-4 inset-x-0 mx-auto border border-transparent dark:border-white/[0.2] rounded-full z-1 px-2 py-2 items-center justify-center space-x-4'
     >
-      <Button className='rounded-md' onClick={handleDocxImport} postfix={<DocxIcon width={20} height={20} />}>
-        Импортировать из
+      <Button className='rounded-md' onClick={handleDocxImport} postfix={<DocxIcon className='size-8' />}>
+        Импорт из
       </Button>
       {isAuthorized && <Button className='rounded-md'>Определить подходящие НПА</Button>}
       {isAuthorized && <NpaModal />}
-      <Button onClick={handleExportPDF} className='rounded-md' postfix={<PdfIcon width={20} height={20} />}>
-        Экспортировать в
+      <Button onClick={handleExportPDF} className='rounded-md' postfix={<PdfIcon className='size-8' />}>
+        Экспорт в
       </Button>
     </div>
   );

@@ -156,7 +156,7 @@
   }
   body {
     background: linear-gradient(124deg, #bfffcb 0%, #26ae6f 49.85%, #85fb97 99.69%);
-    @apply min-h-screen text-foreground overflow-hidden font-inter transition-colors duration-150 ease-out;
+    @apply min-h-screen text-foreground overflow-hidden font-inter;
   }
 
   /* Theme-dependent gradients */
