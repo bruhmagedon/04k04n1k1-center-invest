@@ -29,7 +29,7 @@ export function NpaModal() {
   const [searchTerm, setSearchTerm] = useState('');
   const [isOpen, setIsOpen] = useState(false);
 
-  const { filteredItems, totalPages, paginatedItems } = useNpaData({
+  const { totalPages, paginatedItems } = useNpaData({
     searchTerm,
     currentPage,
     pageSize: PAGE_SIZE
