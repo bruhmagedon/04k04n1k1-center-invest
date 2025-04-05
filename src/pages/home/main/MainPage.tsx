@@ -9,6 +9,7 @@ import { useTheme } from '@/shared/hooks/useTheme';
 import { Button } from '@/shared/ui/button';
 import { NpaModal } from '@/widgets/NpaModal/NpaModal';
 import { ShineBorder } from '@/shared/ui/shine-border';
+import { cn } from '@/shared/utils/cn';
 
 const _MainPage = () => {
   const { theme } = useTheme();
@@ -16,7 +17,7 @@ const _MainPage = () => {
     dictionary: ru,
     domAttributes: {
       editor: {
-        class: 'w-full h-[75vh] py-5 overflow-auto bg-[#232325]!'
+        class: 'w-full h-[75vh] py-5 overflow-auto bg-background'
       }
     }
   });
@@ -30,11 +31,17 @@ const _MainPage = () => {
       <div
         style={{
           border: '0.125rem solid transparent',
-          background: `
-          linear-gradient(#232325, #232325) padding-box,
-          radial-gradient(circle, #047118,#0c8334,#0b931f) border-box
-        `,
-          borderRadius: '1rem' // Для круга
+          background: cn(
+            `linear-gradient(${theme === 'dark' ? '#232325' : '#ffffff'}, ${
+              theme === 'dark' ? '#232325' : '#ffffff'
+            }) padding-box,`,
+            `${
+              theme === 'dark'
+                ? 'radial-gradient(circle, #047118, #0c8334, #0b931f) border-box'
+                : 'linear-gradient(90deg, #4db8ff, #b3e0ff, #e6f7ff) border-box'
+            }`
+          ),
+          borderRadius: '1rem'
         }}
         className='flex relative max-w-fit inset-x-0 mx-auto border border-transparent dark:border-white/[0.2] rounded-full z-[5000] px-2 py-2 items-center justify-center space-x-4'
       >

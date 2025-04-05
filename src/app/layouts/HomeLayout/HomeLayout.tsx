@@ -8,7 +8,7 @@ export const HomeLayout = () => {
     //todo: 97vh
     <div className='absolute inset-0 top-7.5 left-7.5 right-7.5 flex'>
       <LeftSideBar />
-      <Tabs defaultValue='Редактор' className='flex-1 h-full bg-[#232325] rounded-tr-xl'>
+      <Tabs defaultValue='Редактор' className='flex-1 h-full bg-background rounded-tr-xl'>
         <HomeHeader />
         <main>
           {/* <TabsContent value='Редактор'>Make changes to your account here.</TabsContent>

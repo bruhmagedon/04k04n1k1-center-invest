@@ -8,7 +8,7 @@ import { CircleUserRound, SquarePlus } from 'lucide-react';
 import { useState } from 'react';
 
 export const HomeHeader = () => {
-    const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
   return (
     <header className='flex justify-between items-center h-15 px-7.5 border-b'>
       <div className='flex gap-2.5 w-[320px]'>
@@ -23,10 +23,15 @@ export const HomeHeader = () => {
       </TabsList>
       <Tabs defaultValue='Редактор' className='flex flex-row gap-2.5 justify-end'>
         {/* <Button prefix={<Copy size={16} />}>Копировать</Button> */}
-        
-        <AllDialog triggerIcon={<CircleUserRound size={16} />} triggerText='Вход' title='Вход в систему' isOpen={isOpen} setIsOpen={setIsOpen}>
-              <LoginForm onSuccess={() => window.location.reload()} />
-            </AllDialog>
+        <AllDialog
+          triggerIcon={<CircleUserRound size={16} />}
+          triggerText='Вход'
+          title='Вход в систему'
+          isOpen={isOpen}
+          setIsOpen={setIsOpen}
+        >
+          <LoginForm onSuccess={() => window.location.reload()} />
+        </AllDialog>
         <ThemeSwitcher />
       </Tabs>
     </header>

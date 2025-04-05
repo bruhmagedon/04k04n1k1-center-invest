@@ -4,7 +4,6 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  --border: hsl(240 5.9% 90%);
   --radius: 0.75rem;
   --background: oklch(1 0 0);
   --foreground: oklch(0.141 0.005 285.823);
@@ -21,7 +20,7 @@
   --accent: oklch(0.967 0.001 286.375);
   --accent-foreground: oklch(0.21 0.006 285.885);
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.92 0.004 286.32);
+  --border: oklch(0.9 0.003 286.2 / 0.22);
   --input: oklch(0.92 0.004 286.32);
   --ring: oklch(0.723 0.219 149.579);
   --chart-1: oklch(0.646 0.222 41.116);
@@ -52,7 +51,7 @@
 
 .dark {
   --border: hsl(240 5.9% 90%);
-  --background: oklch(0.141 0.005 285.823);
+  --background: hsl(240, 3%, 14%);
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.21 0.006 285.885);
   --card-foreground: oklch(0.985 0 0);
@@ -154,10 +153,19 @@
   }
   body {
     background: linear-gradient(124deg, #bfffcb 0%, #26ae6f 49.85%, #85fb97 99.69%);
-    @apply min-h-screen text-foreground;
+    @apply min-h-screen text-foreground overflow-hidden;
   }
 
-  /* Custom scrollbar styles */
+  /* Theme-dependent gradients */
+  :root body {
+    background: linear-gradient(124deg, #e6f7ff 0%, #4db8ff 49.85%, #b3e0ff 99.69%);
+  }
+
+  .dark body {
+    background: linear-gradient(124deg, #bfffcb 0%, #26ae6f 49.85%, #85fb97 99.69%);
+  }
+
+  /* Base scrollbar styles */
   ::-webkit-scrollbar {
     width: var(--scrollbar-width);
     height: var(--scrollbar-width);
@@ -167,20 +175,42 @@
     background: transparent;
   }
 
-  ::-webkit-scrollbar-thumb {
-    background: var(--primary);
+  /* Light theme scrollbar */
+  :root ::-webkit-scrollbar-thumb {
+    background: oklch(0.3 0.01 286.2);
     border-radius: var(--radius-sm);
     transition: background 0.2s ease;
   }
 
-  ::-webkit-scrollbar-thumb:hover {
-    background: var(--primary);
+  :root ::-webkit-scrollbar-thumb:hover {
+    background: oklch(0.2 0.01 286.2);
     opacity: 0.8;
   }
 
-  /* Firefox scrollbar */
-  * {
+  /* Dark theme scrollbar */
+  .dark ::-webkit-scrollbar-thumb {
+    background: oklch(0.8 0.01 286.2);
+    border-radius: var(--radius-lg);
+    border: 2px solid transparent;
+    background-clip: padding-box;
+    transition: background 0.2s ease;
+  }
+
+  .dark ::-webkit-scrollbar-thumb:hover {
+    background: oklch(0.9 0.01 286.2);
+    background-clip: padding-box;
+  }
+
+  /* Firefox scrollbar - light theme */
+  :root * {
     scrollbar-width: thin;
-    scrollbar-color: #232325 transparent;
+    scrollbar-color: oklch(0.8 0.01 286.2) transparent;
+  }
+
+  /* Firefox scrollbar - dark theme */
+  .dark * {
+    scrollbar-width: thin;
+    scrollbar-color: oklch(0.3 0.01 286.2) transparent;
+    /* scrollbar-color: oklch(0.6 0.01 286.2) transparent; */
   }
 }
