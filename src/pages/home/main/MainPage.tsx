@@ -17,7 +17,7 @@ const _MainPage = () => {
     dictionary: ru,
     domAttributes: {
       editor: {
-        class: 'w-full h-[75vh] py-5 overflow-auto bg-background'
+        class: 'w-full h-[75vh] py-5 overflow-auto bg-background!'
       }
     }
   });
@@ -46,6 +46,7 @@ const _MainPage = () => {
         className='flex relative max-w-fit inset-x-0 mx-auto border border-transparent dark:border-white/[0.2] rounded-full z-[5000] px-2 py-2 items-center justify-center space-x-4'
       >
         <Button className='rounded-md'>Отправить на проверку</Button>
+        <Button className='rounded-md'>Экспортировать из DOCX</Button>
         <Button className='rounded-md'>Экспортировать в PDF</Button>
         <Button className='rounded-md'>Копировать текст</Button>
       </div>
