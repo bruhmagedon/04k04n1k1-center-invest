@@ -7,18 +7,28 @@ import { ReactNode } from 'react';
 
 interface AuthDialogProps {
   triggerText: string;
+  triggerIcon: ReactNode;
   title: string;
   children: ReactNode;
   isOpen: boolean;
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export const AllDialog = ({ triggerText, title, children, isOpen, setIsOpen }: AuthDialogProps) => {
+export const AllDialog = ({
+  triggerText,
+  title,
+  children,
+  isOpen,
+  setIsOpen,
+  triggerIcon
+}: AuthDialogProps) => {
   const { theme } = useTheme();
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <Button onClick={() => setIsOpen(true)}>{triggerText}</Button>
+      <Button onClick={() => setIsOpen(true)} prefix={triggerIcon}>
+        {triggerText}
+      </Button>
       <DialogContent className='sm:max-w-[425px] p-0'>
         <MagicCard className='w-full p-5 rounded-md' gradientColor={theme === 'dark' ? '#000' : '#fff'}>
           <DialogHeader>

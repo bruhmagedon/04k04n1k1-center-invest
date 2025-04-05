@@ -7,7 +7,6 @@ import '@blocknote/mantine/style.css';
 import { useTheme } from '@/shared/hooks/useTheme';
 
 import { Button } from '@/shared/ui/button';
-import { NpaModal } from '@/widgets/NpaModal/NpaModal';
 
 const _MainPage = () => {
   const { theme } = useTheme();
@@ -22,10 +21,8 @@ const _MainPage = () => {
 
   return (
     <main className='flex flex-1 flex-col gap-12 px-6 sm:px-16 h-full   items-center min-h-[calc(100vh-160px)] mt-5 overflow-hidden'>
-      
       <div className='relative w-full rounded-[0.375rem]'>
-        <BlockNoteView className='' theme={theme} editor={editor} />
-        
+        <BlockNoteView theme={theme as Theme} editor={editor} />
       </div>
       <div>
         <Button>Сохранить</Button>

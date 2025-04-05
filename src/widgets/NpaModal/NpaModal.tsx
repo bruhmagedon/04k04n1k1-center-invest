@@ -12,6 +12,7 @@ import { AllDialog } from '@/widgets/AuthDialog/OurDialog';
 import { NpaSearch } from '@/widgets/NpaModal/components/NpaSearch';
 import { NpaList } from '@/widgets/NpaModal/components/NpaList';
 import { useNpaData } from '@/widgets/NpaModal/components/useNpaData';
+import { Notebook } from 'lucide-react';
 
 const MAX_SELECTION = 10;
 const PAGE_SIZE = 10;
@@ -52,6 +53,7 @@ export function NpaModal() {
 
   return (
     <AllDialog
+      triggerIcon={<Notebook size={16} />}
       triggerText={`Выбрать НПА (${selectedCount})`}
       title='Выбор НПА'
       isOpen={isOpen}
