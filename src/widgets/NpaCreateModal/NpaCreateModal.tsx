@@ -9,9 +9,10 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/shared/ui/input';
 import { Button } from '@/shared/ui/button';
 import { AllDialog } from '@/widgets/AuthDialog/OurDialog';
-import { BookPlus, NotebookTabs, SquarePlus, Upload } from 'lucide-react';
+import { BookPlus, Upload } from 'lucide-react';
 import { useCreateNpaMutation } from '@/modules/npa/model/hooks/useCreateNpaMutation';
 import { useTokenStore } from '@/modules/auth/model/store/authStore';
+import { useProfileUser } from '@/shared/hooks/useProfileUser';
 
 const FormSchema = z.object({
   title: z.string().min(3, 'Название должно содержать минимум 3 символа'),
@@ -27,6 +28,7 @@ export function NpaCreateModal() {
   const [fileObject, setFileObject] = useState<File | null>(null);
   const [extractedText, setExtractedText] = useState<string | null>(null);
   const { accessToken } = useTokenStore();
+  const { isAuthorized } = useProfileUser();
 
   const { mutate, isPending } = useCreateNpaMutation();
 
@@ -106,84 +108,88 @@ export function NpaCreateModal() {
   };
 
   return (
-    <AllDialog
-      triggerText='Создать НПА'
-      title='Создание нового НПА'
-      isOpen={isOpen}
-      setIsOpen={setIsOpen}
-      triggerIcon={<BookPlus size={16} />}
-    >
-      <div className='max-w-md h-full relative'>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} className='space-y-4 h-full flex flex-col'>
-            <FormField
-              control={form.control}
-              name='title'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Название НПА</FormLabel>
-                  <FormControl>
-                    <Input placeholder='Введите название НПА' {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+    <>
+      {isAuthorized && (
+        <AllDialog
+          triggerText='Создать НПА'
+          title='Создание нового НПА'
+          isOpen={isOpen}
+          setIsOpen={setIsOpen}
+          triggerIcon={<BookPlus size={16} />}
+        >
+          <div className='max-w-md h-full relative'>
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(handleSubmit)} className='space-y-4 h-full flex flex-col'>
+                <FormField
+                  control={form.control}
+                  name='title'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Название НПА</FormLabel>
+                      <FormControl>
+                        <Input placeholder='Введите название НПА' {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-            <div className='space-y-2'>
-              <FormLabel>Документ НПА</FormLabel>
-              <div className='flex flex-col gap-2'>
-                <div className='flex items-center gap-2'>
-                  <Input
-                    type='file'
-                    accept='.docx'
-                    id='file-upload'
-                    className='hidden'
-                    onChange={handleFileChange}
-                  />
-                  <Button
-                    type='button'
-                    prefix={<Upload className='mr-2 h-4 w-4' />}
-                    onClick={() => document.getElementById('file-upload')?.click()}
-                    className='w-full flex'
-                    disabled={isUploading}
-                  >
-                    {isUploading ? 'Загрузка...' : 'Загрузить документ'}
-                  </Button>
-                </div>
-                {fileName && (
-                  <div className='text-sm text-muted-foreground bg-muted/30 p-2 rounded'>
-                    Загружен файл: {fileName}
-                    {extractedText && <div className='mt-1 text-xs'>Преобразован в текстовый формат</div>}
+                <div className='space-y-2'>
+                  <FormLabel>Документ НПА</FormLabel>
+                  <div className='flex flex-col gap-2'>
+                    <div className='flex items-center gap-2'>
+                      <Input
+                        type='file'
+                        accept='.docx'
+                        id='file-upload'
+                        className='hidden'
+                        onChange={handleFileChange}
+                      />
+                      <Button
+                        type='button'
+                        prefix={<Upload className='mr-2 h-4 w-4' />}
+                        onClick={() => document.getElementById('file-upload')?.click()}
+                        className='w-full flex'
+                        disabled={isUploading}
+                      >
+                        {isUploading ? 'Загрузка...' : 'Загрузить документ'}
+                      </Button>
+                    </div>
+                    {fileName && (
+                      <div className='text-sm text-muted-foreground bg-muted/30 p-2 rounded'>
+                        Загружен файл: {fileName}
+                        {extractedText && <div className='mt-1 text-xs'>Преобразован в текстовый формат</div>}
+                      </div>
+                    )}
                   </div>
-                )}
-              </div>
-            </div>
+                </div>
 
-            <FormField
-              control={form.control}
-              name='link'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Ссылка на НПА</FormLabel>
-                  <FormControl>
-                    <Input placeholder='https://example.com/npa' {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                <FormField
+                  control={form.control}
+                  name='link'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Ссылка на НПА</FormLabel>
+                      <FormControl>
+                        <Input placeholder='https://example.com/npa' {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-            <Button
-              type='submit'
-              className='w-full mt-6 bottom-0 absolute'
-              disabled={isUploading || !fileObject || isPending}
-            >
-              {isPending ? 'Создание...' : 'Создать НПА'}
-            </Button>
-          </form>
-        </Form>
-      </div>
-    </AllDialog>
+                <Button
+                  type='submit'
+                  className='w-full mt-6 bottom-0 absolute'
+                  disabled={isUploading || !fileObject || isPending}
+                >
+                  {isPending ? 'Создание...' : 'Создать НПА'}
+                </Button>
+              </form>
+            </Form>
+          </div>
+        </AllDialog>
+      )}
+    </>
   );
 }

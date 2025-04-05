@@ -16,23 +16,13 @@ export const HomeHeader = () => {
   const { isAuthorized } = useProfileUser();
   const { onLogout } = useLogout();
 
-  //  return (
-  //     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-  //       {!isAuthorized ? (
-  //         <Button onClick={() => setIsOpen(true)} prefix={triggerIcon}>
-  //           {triggerText}
-  //         </Button>
-  //       ) : (
-  //         <Button onClick={onLogout}>Выйти</Button>
-  //       )}
-
   const onModalClose = () => {
     setIsOpen(false);
   };
 
   return (
     <header className='flex justify-between items-center h-15 px-7.5 border-b'>
-      <div className='flex gap-2.5 w-[320px]'>
+      <div className='flex gap-2.5'>
         <Button prefix={<SquarePlus size={16} />}>
           <span>Создать ТЗ</span>
         </Button>
@@ -40,8 +30,8 @@ export const HomeHeader = () => {
       </div>
       <TabsList className='flex '>
         <TabsTrigger value='Редактор'>Редактор</TabsTrigger>
-        <TabsTrigger value='Проверка'>Проверка</TabsTrigger>
-        <TabsTrigger value='Рекомендуемые НПА'>Рекомендуемые НПА</TabsTrigger>
+        {isAuthorized && <TabsTrigger value='Проверка'>Проверка</TabsTrigger>}
+        {isAuthorized && <TabsTrigger value='Рекомендуемые НПА'>Рекомендуемые НПА</TabsTrigger>}
       </TabsList>
       <Tabs defaultValue='Авторизация' className='flex flex-row gap-2.5 justify-end'>
         <AllDialog

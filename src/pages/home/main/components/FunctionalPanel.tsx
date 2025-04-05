@@ -2,12 +2,15 @@ import { Button } from '@/shared/ui/button';
 import { cn } from '@/shared/utils/cn';
 import { NpaModal } from '@/widgets/NpaModal/NpaModal';
 import { handleDocxImport, handleExportPDF } from '../utils/documentHandlers';
+import { useProfileUser } from '@/shared/hooks/useProfileUser';
 
 interface FunctionalPanelProps {
   theme: string;
 }
 
 export const FunctionalPanel = ({ theme }: FunctionalPanelProps) => {
+  const { isAuthorized } = useProfileUser();
+
   return (
     <div
       style={{
@@ -29,8 +32,8 @@ export const FunctionalPanel = ({ theme }: FunctionalPanelProps) => {
       <Button className='rounded-md' onClick={handleDocxImport}>
         Импортировать из DOCX
       </Button>
-      <Button className='rounded-md'>Определить подходящие НПА</Button>
-      <NpaModal />
+      {isAuthorized && <Button className='rounded-md'>Определить подходящие НПА</Button>}
+      {isAuthorized && <NpaModal />}
       <Button onClick={handleExportPDF} className='rounded-md'>
         Экспортировать в PDF
       </Button>

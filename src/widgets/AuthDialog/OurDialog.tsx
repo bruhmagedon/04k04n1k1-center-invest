@@ -6,7 +6,7 @@ import { MagicCard } from '@/shared/ui/magic-card';
 import { ReactNode } from 'react';
 
 interface AuthDialogProps {
-  triggerText: string;
+  triggerText?: string;
   triggerIcon?: ReactNode;
   title: string;
   children?: ReactNode;
@@ -42,10 +42,9 @@ export const AllDialog = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <Button onClick={onClick} prefix={triggerIcon}>
+      <Button onClick={onClick} prefix={triggerIcon} className=''>
         {triggerText}
       </Button>
-
       <DialogContent className='sm:max-w-[26.5rem] p-0 min-h-[27.5rem]'>
         <MagicCard className='w-full p-5 rounded-md flex'>
           <div className='flex flex-col gap-4 h-full relative'>
