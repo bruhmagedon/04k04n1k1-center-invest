@@ -5,6 +5,7 @@ import { defineConfig } from 'vite';
 import pluginChecker from 'vite-plugin-checker';
 import { VitePWA } from 'vite-plugin-pwa';
 import tsconfigPaths from 'vite-tsconfig-paths';
+import svgrPlugin from 'vite-plugin-svgr';
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
@@ -12,6 +13,7 @@ export default defineConfig({
     react({
       tsDecorators: true
     }),
+    svgrPlugin(),
     tsconfigPaths(),
     VitePWA(
       { registerType: 'autoUpdate', workbox: {
