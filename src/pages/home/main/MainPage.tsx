@@ -13,6 +13,7 @@ import { cn } from '@/shared/utils/cn';
 import { PDFExporter, pdfDefaultSchemaMappings } from '@blocknote/xl-pdf-exporter';
 import * as ReactPDF from '@react-pdf/renderer';
 import { toast } from 'sonner';
+import { NpaModal } from '@/widgets/NpaModal/NpaModal';
 
 const _MainPage = () => {
   const { theme } = useTheme();
@@ -104,14 +105,12 @@ const _MainPage = () => {
         }}
         className='flex relative max-w-fit inset-x-0 mx-auto border border-transparent dark:border-white/[0.2] rounded-full z-[5000] px-2 py-2 items-center justify-center space-x-4'
       >
-        <Button className='rounded-md'>Отправить на проверку</Button>
-        <Button className='rounded-md' onClick={handleDocxImport}>
-          Экспортировать из DOCX
-        </Button>
+        <Button className='rounded-md'>Импортировать из DOCX</Button>
+        <Button className='rounded-md'>Определить подходящие НПА</Button>
+        <NpaModal />
         <Button onClick={handleExportPDF} className='rounded-md'>
           Экспортировать в PDF
         </Button>
-        <Button className='rounded-md'>Копировать текст</Button>
       </div>
     </main>
   );
