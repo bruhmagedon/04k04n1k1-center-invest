@@ -14,7 +14,7 @@ export const NpaList = ({ items, form, maxSelection }: NpaListProps) => (
     control={form.control}
     name='items'
     render={() => (
-      <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+      <div className='grid grid-cols-1 md:grid-cols-1 gap-4'>
         {items.map((item) => (
           <NpaListItem key={item.id} item={item} form={form} maxSelection={maxSelection} />
         ))}

@@ -20,7 +20,7 @@ export const AllDialog = ({ triggerText, title, children, isOpen, setIsOpen }: A
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <Button onClick={() => setIsOpen(true)}>{triggerText}</Button>
       <DialogContent className='sm:max-w-[425px] p-0'>
-        <MagicCard className='w-full p-5 rounded-lg' gradientColor={theme === 'dark' ? '#000' : '#fff'}>
+        <MagicCard className='w-full p-5 rounded-md' gradientColor={theme === 'dark' ? '#000' : '#fff'}>
           <DialogHeader>
             <DialogTitle className='mb-4'>{title}</DialogTitle>
           </DialogHeader>

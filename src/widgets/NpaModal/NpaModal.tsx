@@ -14,7 +14,7 @@ import { NpaList } from '@/widgets/NpaModal/components/NpaList';
 import { useNpaData } from '@/widgets/NpaModal/components/useNpaData';
 
 const MAX_SELECTION = 10;
-const PAGE_SIZE = 20;
+const PAGE_SIZE = 10;
 
 const FormSchema = z.object({
   items: z
@@ -72,7 +72,7 @@ export function NpaModal() {
               <Button
                 type='submit'
                 disabled={form.watch('items')?.length > MAX_SELECTION}
-                className='mt-4 w-full'
+                className='mt-2.5 w-full'
               >
                 Подтвердить выбор ({selectedCount})
               </Button>
