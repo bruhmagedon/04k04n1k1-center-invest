@@ -12,7 +12,9 @@ import { newAxiosError } from '@/shared/api/types';
 let fileInputRef: RefObject<HTMLInputElement> | null = null;
 
 let editorRef: BlockNoteEditor | null = null;
-
+interface SearchIdResponse {
+    search_id: number;
+  }
 export const setReferences = (inputRef: RefObject<HTMLInputElement>, editor: BlockNoteEditor) => {
   fileInputRef = inputRef;
   editorRef = editor;
@@ -28,7 +30,7 @@ export const handleDocxImport = () => {
   }
 };
 
-export const handleCheked = async (searchNpa: UseMutateFunction<NpaSearchResponse, newAxiosError, string, unknown>): Promise<File | null> => {
+export const handleCheked = async (searchNpa:UseMutateFunction<SearchIdResponse, newAxiosError, string, unknown>): Promise<File | null> => {
     if (!editorRef) {
       toast.error('Редактор не инициализирован');
       return null;

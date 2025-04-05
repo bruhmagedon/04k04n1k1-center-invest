@@ -14,7 +14,8 @@ interface FunctionalPanelProps {
 
 export const FunctionalPanel = ({ theme }: FunctionalPanelProps) => {
   const { isAuthorized } = useProfileUser();
-  const { mutate: searchNpa } = useSearchNpaMutation();
+  const { initialSearchMutation} = useSearchNpaMutation();
+  const {mutate: searchNpa } = initialSearchMutation;
   return (
     <div
       style={{
