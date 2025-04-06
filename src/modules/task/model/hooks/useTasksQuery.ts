@@ -11,9 +11,9 @@ export const useTasksQuery = (options: UseTasksQueryOptions = {}) => {
   const { searchTerm = '', enabled = true } = options;
   
   return useQuery<TasksResponse>({
-    queryKey: ['tasks', searchTerm], // Include searchTerm in the query key
+    queryKey: ['tasks', searchTerm], 
     queryFn: async () => {
-      // Add search parameter if searchTerm is provided
+
       const endpoint = searchTerm 
         ? `/npa/analytics/?search=${encodeURIComponent(searchTerm)}`
         : '/npa/analytics/';

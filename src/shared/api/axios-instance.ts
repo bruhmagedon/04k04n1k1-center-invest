@@ -6,13 +6,13 @@ import axios from 'axios';
 const api: AxiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
   withCredentials: true,
-  timeout: 15000, // Увеличиваем таймаут
+  timeout: 15000, 
   headers: {
     Accept: 'application/json'
   }
 });
 
-// Добавляем интерцептор для автоматического добавления токена
+
 api.interceptors.request.use((config) => {
   const token = JSON.parse(localStorage.getItem('token-storage') || '{}')?.state?.accessToken;
 
@@ -23,13 +23,13 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Добавляем интерцептор для обработки ошибок
+
 api.interceptors.response.use(
   (response) => response,
   (error) => {
     console.error('API Error:', error);
 
-    // Можно добавить специальную обработку для разных типов ошибок
+
     if (error.message === 'Network Error') {
       console.log('Ошибка сети. Проверьте подключение или CORS настройки');
     }

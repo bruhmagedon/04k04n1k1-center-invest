@@ -10,7 +10,6 @@ import { HomeHeader } from '@/app/layouts/HomeLayout/components/HomeHeader';
 import { Loader } from '@/shared/ui/loader';
 import { useTaskType } from '@/modules/task/model/hooks/useTaskType';
 
-// Create a context to provide task data to child components
 export const TaskContext = createContext<{
   task: Task | undefined;
   isLoading: boolean;
@@ -29,11 +28,6 @@ export const HomeLayout = () => {
   const { id } = useParams<{ id: string }>();
   const { isTemporary } = useTaskType();
 
-  useEffect(() => {
-    console.log(isTemporary, 'isTemporary');
-  }, [isTemporary]);
-
-  // Fetch task data only when ID is present AND it's an existing task (not temporary)
   const {
     data: task,
     isLoading,

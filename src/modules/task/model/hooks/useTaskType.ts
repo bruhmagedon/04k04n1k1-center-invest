@@ -9,10 +9,10 @@ export const useTaskType = (): {
 } => {
   const { id } = useParams<{ id: string }>();
 
-  // Проверяем, является ли id числом
+
   const isNumeric = id ? /^\d+$/.test(id) : false;
 
-  // Проверяем, похож ли id на UUID (упрощенная проверка)
+
   const isUuid = id ? /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id) : false;
 
   let taskType: TaskType = 'unknown';

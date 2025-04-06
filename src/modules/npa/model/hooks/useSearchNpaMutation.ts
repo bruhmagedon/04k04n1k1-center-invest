@@ -6,18 +6,17 @@ import { useTokenStore } from '@/modules/auth/model/store/authStore';
 import { getSearchStatus, SearchStatusResponse } from '../api/getSearchStatus';
 import { toast } from 'sonner';
 
-// Interface for the search ID response
+
 interface SearchIdResponse {
   search_id: number;
   task_id: string;
 }
 
-// Interface for NPA search results
+
 interface NpaSearchResult {
   id: string;
   name: string;
   relevance_score: number;
-  // Add other fields returned by the API as needed
 }
 
 interface NpaSearchResponse {
@@ -26,14 +25,12 @@ interface NpaSearchResponse {
   count: number;
 }
 
-// Storage keys for persisting state
 const SEARCH_ID_KEY = 'npa_search_id';
 const TASK_ID_KEY = 'npa_task_id';
 const SEARCH_COMPLETE_KEY = 'npa_search_complete';
 
 export const useSearchNpaMutation = () => {
   const queryClient = useQueryClient();
-  // Initialize state from localStorage if available
   const [searchId, setSearchId] = useState<string | null>(() => {
     return localStorage.getItem(SEARCH_ID_KEY);
   });
@@ -45,7 +42,6 @@ export const useSearchNpaMutation = () => {
     return localStorage.getItem(TASK_ID_KEY);
   });
 
-  // Persist state changes to localStorage
   useEffect(() => {
     if (searchId) {
       localStorage.setItem(SEARCH_ID_KEY, searchId);
@@ -91,7 +87,7 @@ export const useSearchNpaMutation = () => {
     return response.data;
   };
 
-  // Add explicit function to fetch results that can be called from components
+
   const fetchResults = async () => {
     if (!searchId) {
       console.error('Cannot fetch results: No search ID available');
@@ -158,7 +154,7 @@ export const useSearchNpaMutation = () => {
         return false;
       }
 
-      // Check the status based on the actual API response structure
+ 
       if (data && data.state && data.state.data) {
         setSearchComplete(true);
         queryClient.invalidateQueries({ queryKey: ['npaSearchResults', searchId] });
@@ -171,12 +167,11 @@ export const useSearchNpaMutation = () => {
   });
 
   const resultsQuery = useQuery<NpaSearchResponse, newAxiosError>({
-    queryKey: ['npaSearchResults', searchId], // Ключ должен быть уникальным для каждого searchId
+    queryKey: ['npaSearchResults', searchId], 
     queryFn: () => fetchNpaSearchResults(searchId),
-    enabled: !!searchId && searchComplete, // Запускаем только когда есть ID и поиск завершен
+    enabled: !!searchId && searchComplete, 
     staleTime: 5 * 60 * 1000,
 
-    // Добавляем обработку ошибок
     //@ts-ignore
     onError: (error) => {
       toast.error('Ошибка загрузки результатов', {
@@ -185,7 +180,7 @@ export const useSearchNpaMutation = () => {
     }
   });
 
-  // Function to clear search state (useful for testing or resetting)
+
   const clearSearchState = () => {
     setSearchId(null);
     setSearchComplete(false);
@@ -195,7 +190,6 @@ export const useSearchNpaMutation = () => {
     localStorage.removeItem(SEARCH_COMPLETE_KEY);
   };
 
-  // Return the original structure to maintain compatibility
   return {
     mutate: initialSearchMutation.mutate,
     initialSearchMutation,
@@ -211,6 +205,6 @@ export const useSearchNpaMutation = () => {
     error: initialSearchMutation.error || statusQuery.error || resultsQuery.error,
     data: resultsQuery.data,
     fetchResults,
-    clearSearchState // Export the clear function
+    clearSearchState
   };
 };

@@ -6,7 +6,7 @@ export interface NpaSearchResult {
   id: string;
   name: string;
   relevance_score: number;
-  // Add other fields returned by the API as needed
+
 }
 
 export interface NpaSearchResponse {

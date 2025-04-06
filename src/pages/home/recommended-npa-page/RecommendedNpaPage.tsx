@@ -14,7 +14,6 @@ const RecommendedNpaPage = () => {
   const { id } = useParams<{ id: string }>();
   const [isRefreshing, setIsRefreshing] = useState(false);
   
-  // Get the search NPA hook
   const {
     resultsQuery,
     isLoading,
@@ -25,7 +24,7 @@ const RecommendedNpaPage = () => {
     data
   } = useSearchNpaMutation();
   
-  // Log important state for debugging
+
   console.log('NPA Page State:', { 
     searchId, 
     searchComplete, 
@@ -35,14 +34,14 @@ const RecommendedNpaPage = () => {
     data
   });
   
-  // Try to fetch results when the component mounts
+
   useEffect(() => {
     if (searchId && searchComplete && !data && !isLoading) {
       handleRefresh();
     }
   }, [searchId, searchComplete, data, isLoading]);
   
-  // Handle manual refresh
+
   const handleRefresh = async () => {
     setIsRefreshing(true);
     try {

@@ -21,7 +21,7 @@ export function RegisterForm() {
   const { theme } = useTheme();
   const navigate = useNavigate();
   const { visibleButton, inputType } = usePasswordVisible();
-  // const { accessToken } = useTokenStore();
+
 
   const { mutate, isPending } = useRegisterMutation();
 
@@ -35,11 +35,7 @@ export function RegisterForm() {
     }
   });
 
-  // useEffect(() => {
-  //   if (accessToken) {
-  //     navigate('/');
-  //   }
-  // }, []);
+
 
   const onSubmit = ({ confirmPassword, ...restData }: z.infer<typeof registerSchema>) => {
     mutate(restData, {

@@ -5,7 +5,7 @@ import { formatDate } from '@/shared/utils/formatDate';
 import { useNavigate } from 'react-router-dom';
 import { useTasksQuery } from '@/modules/task/model/hooks/useTasksQuery';
 import { useProfileUser } from '@/shared/hooks/useProfileUser';
-import { cn } from '@/shared/utils/cn';
+
 import { useState, useEffect } from 'react';
 import { useDebounce } from '@/shared/hooks/useDebounce';
 import { toast } from 'sonner';

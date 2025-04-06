@@ -15,8 +15,7 @@ export const getSearchStatus = async (taskId: string): Promise<SearchStatusRespo
   const headers: Record<string, string> = {
     'accept': 'application/json'
   };
-  
-  // Only add Authorization header if we have a token
+
   if (accessToken) {
     headers['Authorization'] = `Bearer ${accessToken}`;
   }
