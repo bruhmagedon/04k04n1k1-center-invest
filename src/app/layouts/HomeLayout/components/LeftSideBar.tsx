@@ -5,7 +5,7 @@ import { formatDate } from '@/shared/utils/formatDate';
 import { useNavigate } from 'react-router-dom';
 import { useTasksQuery } from '@/modules/task/model/hooks/useTasksQuery';
 import { useProfileUser } from '@/shared/hooks/useProfileUser';
-import { cn } from '@/shared/utils/cn';
+
 import { useState, useEffect } from 'react';
 import { useDebounce } from '@/shared/hooks/useDebounce';
 
@@ -15,7 +15,7 @@ export const LeftSideBar = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const debouncedSearchTerm = useDebounce(searchTerm, 500);
   
-  // Use the debounced search term in the query
+
   const { data, isLoading, isError } = useTasksQuery({ 
     enabled: isAuthorized,
     searchTerm: debouncedSearchTerm 
@@ -24,7 +24,7 @@ export const LeftSideBar = () => {
   const tasks = data?.results || [];
 
   const handleTaskClick = (taskId: number) => {
-    // Navigate to the editor route as defined in routesConfig
+ 
     navigate(`/task/${taskId}/editor`);
   };
 

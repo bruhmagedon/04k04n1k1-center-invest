@@ -9,7 +9,7 @@ import { LeftSideBar } from '@/app/layouts/HomeLayout/components/LeftSideBar';
 import { HomeHeader } from '@/app/layouts/HomeLayout/components/HomeHeader';
 import { Loader } from '@/shared/ui/loader';
 
-// Create a context to provide task data to child components
+
 export const TaskContext = createContext<{
   task: Task | undefined;
   isLoading: boolean;
@@ -27,7 +27,7 @@ export const HomeLayout = () => {
   const location = useLocation();
   const { id } = useParams<{ id: string }>();
 
-  // Fetch task data when ID is present
+
   const {
     data: task,
     isLoading,

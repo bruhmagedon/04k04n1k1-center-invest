@@ -36,7 +36,6 @@ export const handleCheked = async (
   }
 
   try {
-    // Проверяем, есть ли контент в редакторе
     const blocksWithoutImages = editorRef.document.filter((block) => block.type !== 'image');
     if (blocksWithoutImages.length === 0) {
       toast.error('Редактор пуст. Добавьте текст перед проверкой.');

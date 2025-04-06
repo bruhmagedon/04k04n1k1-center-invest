@@ -3,7 +3,6 @@ import { cn } from '@/shared/utils/cn';
 import { NpaModal } from '@/widgets/NpaModal/NpaModal';
 import { handleCheked, handleDocxImport, handleExportPDF } from '../utils/documentHandlers';
 import { useProfileUser } from '@/shared/hooks/useProfileUser';
-// Fix the import path to match your actual SVG location
 import DocxIcon from '@/shared/assets/icons/docx.svg?react';
 import PdfIcon from '@/shared/assets/icons/pdf.svg?react';
 import { useSearchNpaMutation } from '@/modules/npa/model/hooks/useSearchNpaMutation';

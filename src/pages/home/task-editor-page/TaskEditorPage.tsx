@@ -62,7 +62,6 @@ const TaskEditorPage = () => {
     }
   }, [editor, fileInputRef, id]);
 
-  // Display task data from the query instead of context when available
   const displayTask = taskData || contextTask;
 
   return (

@@ -17,8 +17,7 @@ export const useTaskQuery = ({ id, enabled = true, fetchMdFile = false }: UseTas
 
       if (fetchMdFile && data.file) {
         try {
-          // Используем обычный axios вместо вашего api-инстанса
-          // Это позволит избежать добавления baseURL к абсолютному URL
+
           console.log('Пытаемся получить файл:', data.file);
 
           const mdResponse = await axios.get(data.file, {

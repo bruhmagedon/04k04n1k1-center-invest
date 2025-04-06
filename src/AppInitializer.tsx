@@ -1,4 +1,3 @@
-// import { profileUserAPI } from '@app/api/profile';
 
 import { RouterProvider } from './app/router/RouterProvider';
 import { useTokenStore } from './modules/auth/model/store/authStore';

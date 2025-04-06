@@ -39,11 +39,7 @@ export function LoginForm() {
       password: ''
     }
   });
-  // useEffect(() => {
-  //   if (localStorage.getItem('token-storage')) {
-  //     navigate('/');
-  //   }
-  // }, []);
+
   const onSubmit = (data: z.infer<typeof loginSchema>) => {
     mutate(data, {
       onSuccess: () => {
