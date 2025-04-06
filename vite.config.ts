@@ -29,9 +29,10 @@ export default defineConfig({
     cors: true,
     strictPort: true, // Запрещает автоматический выбор порта
     proxy: {
-      '/api': {
-        target: 'http://103.71.23.62/',
-        changeOrigin: true
+      '/media': {
+        target: 'http://api-rnd.techgiants.ru',
+        changeOrigin: true,
+        secure: false
       }
     }
   },

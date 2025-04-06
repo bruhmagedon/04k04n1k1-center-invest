@@ -1,9 +1,9 @@
 import { ru } from '@blocknote/core/locales';
 import { BlockNoteView, Theme } from '@blocknote/mantine';
 import { useCreateBlockNote } from '@blocknote/react';
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { InfoIcon } from 'lucide-react';
+import { InfoIcon, Loader2 } from 'lucide-react';
 
 import '@blocknote/core/fonts/inter.css';
 import '@blocknote/mantine/style.css';
@@ -14,6 +14,9 @@ import { handleFileChange, setReferences } from '../main/utils/documentHandlers'
 import { useCreateTaskMutation } from '@/modules/task/model/hooks/useCreateTaskMutation';
 import { TabsContent } from '@radix-ui/react-tabs';
 import { useProfileUser } from '@/shared/hooks/useProfileUser';
+import { useTaskContext } from '@/app/layouts/HomeLayout/HomeLayout';
+import { useTaskQuery } from '@/modules/task/model/hooks/useTaskQuery';
+import axios from 'axios';
 
 const TaskEditorPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -21,6 +24,27 @@ const TaskEditorPage = () => {
   const { isAuthorized } = useProfileUser();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { mutate: createTask } = useCreateTaskMutation();
+  const { task: contextTask } = useTaskContext();
+  const [isFileLoading, setIsFileLoading] = useState(false);
+  const [fileError, setFileError] = useState<string | null>(null);
+  const [mdContent, setMdContent] = useState<string | null>(null);
+
+  const {
+    data: taskData,
+    isLoading: isTaskLoading,
+    error: taskError
+  } = useTaskQuery({
+    id: id || '',
+    enabled: !!id,
+    fetchMdFile: true
+  });
+
+  useEffect(() => {
+    if (taskData?.mdContent) {
+      setMdContent(taskData.mdContent);
+      console.log('MD file content loaded:', taskData.mdContent.substring(0, 100) + '...');
+    }
+  }, [taskData]);
 
   const editor = useCreateBlockNote({
     dictionary: ru,
@@ -31,7 +55,6 @@ const TaskEditorPage = () => {
     }
   });
 
-  //   TODO: Заголовка фетча по id (заменить на useQuery)
   useEffect(() => {
     if (fileInputRef.current && editor) {
       setReferences(fileInputRef as React.RefObject<HTMLInputElement>, editor);
@@ -39,12 +62,33 @@ const TaskEditorPage = () => {
     }
   }, [editor, fileInputRef, id]);
 
+  // Display task data from the query instead of context when available
+  const displayTask = taskData || contextTask;
+
   return (
     <TabsContent value='Редактор'>
       <main className='flex flex-1 flex-col px-6 sm:px-16 h-full w-full items-center overflow-hidden relative'>
-        {/* <h2 className='text-xl font-semibold mb-2'>Задача #{id}</h2> */}
+        {displayTask && <h2 className='text-xl font-semibold mb-2'>{displayTask.name}</h2>}
+
         <div className='relative w-full rounded-[0.375rem] flex-1 mt-5 mb-20'>
-          <BlockNoteView theme={theme as Theme} editor={editor} />
+          {isTaskLoading || isFileLoading ? (
+            <div className='flex items-center justify-center h-full'>
+              <Loader2 className='animate-spin mr-2' size={24} />
+              <span>Загрузка содержимого файла...</span>
+            </div>
+          ) : taskError || fileError ? (
+            <div className='flex items-center justify-center h-full text-red-500'>
+              <span>{fileError || 'Ошибка при загрузке задачи'}</span>
+            </div>
+          ) : mdContent ? (
+            <div className='p-4 border rounded'>
+              <h3 className='text-lg font-medium mb-2'>Содержимое MD файла:</h3>
+              <pre className='whitespace-pre-wrap bg-gray-100 p-3 rounded'>{mdContent}</pre>
+            </div>
+          ) : (
+            <BlockNoteView theme={theme as Theme} editor={editor} />
+          )}
+
           {isAuthorized && (
             <div className='flex items-center justify-center gap-2 mb-2 text-muted-foreground text-sm font-medium px-2'>
               <InfoIcon size={16} className='opacity-70' />

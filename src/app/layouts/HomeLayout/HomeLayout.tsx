@@ -1,14 +1,41 @@
 import { Outlet } from 'react-router';
 import { Tabs } from '@/shared/ui/tabs';
 import { useNavigate, useLocation, useParams } from 'react-router-dom';
+import { useTaskQuery } from '@/modules/task/model/hooks/useTaskQuery';
+import { createContext, useContext } from 'react';
+import { Task } from '@/modules/task/model/types/types';
 
 import { LeftSideBar } from '@/app/layouts/HomeLayout/components/LeftSideBar';
 import { HomeHeader } from '@/app/layouts/HomeLayout/components/HomeHeader';
+import { Loader } from '@/shared/ui/loader';
+
+// Create a context to provide task data to child components
+export const TaskContext = createContext<{
+  task: Task | undefined;
+  isLoading: boolean;
+  isError: boolean;
+}>({
+  task: undefined,
+  isLoading: false,
+  isError: false
+});
+
+export const useTaskContext = () => useContext(TaskContext);
 
 export const HomeLayout = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { id } = useParams<{ id: string }>();
+
+  // Fetch task data when ID is present
+  const {
+    data: task,
+    isLoading,
+    isError
+  } = useTaskQuery({
+    id: id || '',
+    enabled: !!id
+  });
 
   const getActiveTab = () => {
     const path = location.pathname;
@@ -45,7 +72,22 @@ export const HomeLayout = () => {
         className='flex-1 h-full bg-background rounded-tr-xl gap-0'
       >
         <HomeHeader />
-        <Outlet />
+        {id && isLoading ? (
+          <div className='flex items-center justify-center h-full'>
+            <Loader />
+          </div>
+        ) : id && isError ? (
+          <div className='flex flex-col items-center justify-center h-full text-center'>
+            <h2 className='text-xl font-bold mb-2'>Ошибка загрузки задания</h2>
+            <p className='text-muted-foreground'>
+              Не удалось загрузить техническое задание. Попробуйте обновить страницу.
+            </p>
+          </div>
+        ) : (
+          <TaskContext.Provider value={{ task, isLoading, isError }}>
+            <Outlet />
+          </TaskContext.Provider>
+        )}
       </Tabs>
     </div>
   );
