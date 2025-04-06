@@ -18,6 +18,7 @@ import { useTaskContext } from '@/app/layouts/HomeLayout/HomeLayout';
 import { useTaskQuery } from '@/modules/task/model/hooks/useTaskQuery';
 import { useTaskType } from '@/modules/task/model/hooks/useTaskType';
 import { Button } from '@/shared/ui/button';
+import { toast } from 'sonner';
 
 const TaskEditorPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -60,13 +61,20 @@ const TaskEditorPage = () => {
 
   // Загрузка MD-контента в редактор
   useEffect(() => {
-    //@ts-ignore
-    if (taskData?.mdContent && editor && !isMarkdownLoaded) {
+    if (taskData) {
       const loadMarkdownContent = async () => {
         try {
           console.log('Загрузка MD-контента в редактор...');
-          //@ts-ignore
-          const blocks = await editor.tryParseMarkdownToBlocks(taskData.mdContent);
+          // Now the markdown content is directly in the file field
+          const markdownContent = taskData.text;
+
+          if (!markdownContent) {
+            console.error('Markdown content is empty');
+            setFileError('Содержимое файла пусто');
+            return;
+          }
+
+          const blocks = await editor.tryParseMarkdownToBlocks(markdownContent);
           editor.replaceBlocks(editor.document, blocks);
           setIsMarkdownLoaded(true);
           console.log('MD-контент успешно загружен в редактор');
@@ -77,10 +85,9 @@ const TaskEditorPage = () => {
       };
 
       loadMarkdownContent();
-      //@ts-ignore
-      setMdContent(taskData.mdContent);
+      setMdContent(taskData.file);
     }
-  }, [taskData, editor, isMarkdownLoaded]);
+  }, [taskData, editor]);
 
   useEffect(() => {
     if (isTemporary) {
@@ -95,10 +102,46 @@ const TaskEditorPage = () => {
     }
   }, [editor, fileInputRef, id]);
 
+  const onCreateTask = async () => {
+    if (editor.document.length <= 1) {
+      toast.error('Нельзя сохранит пустое техническое задание', {
+        description: 'Добавьте текст перед сохранением'
+      });
+      return;
+    }
+
+    const blocksWithoutImages = editor.document.filter((block) => block.type !== 'image');
+    const markdownContent = await editor.blocksToMarkdownLossy(blocksWithoutImages);
+
+    const markdownBlob = new Blob([markdownContent], { type: 'text/markdown' });
+    const markdownFile = new File([markdownBlob], 'document.md', { type: 'text/markdown' });
+    const formData = new FormData();
+
+    //@ts-ignore
+    let taskName = editor.document[0].content[0].text;
+
+    formData.append('name', taskName);
+    formData.append('file', markdownFile);
+
+    createTask(formData, {
+      onSuccess: (taskData) => {
+        console.log('Task created successfully:', taskData);
+        toast.success('Техническое задание успешно создано');
+      },
+      onError: (error) => {
+        console.error('Error creating task:', error);
+        toast.error('Ошибка при создании технического задания', {
+          description: error.response?.data?.detail || 'Проверьте подключение к серверу'
+        });
+      }
+    });
+  };
+
   return (
     <TabsContent value='Редактор'>
       <main className='flex flex-1 flex-col px-6 sm:px-16 h-full w-full items-center overflow-hidden relative'>
         <div className='relative w-full rounded-[0.375rem] flex-1 mt-5 mb-20'>
+          {isTemporary && <Button onClick={onCreateTask}>Сохранить ТЗ</Button>}
           {isTaskLoading || isFileLoading ? (
             <div className='flex items-center justify-center h-[700px]'>
               <Loader2 className='animate-spin mr-2' size={24} />

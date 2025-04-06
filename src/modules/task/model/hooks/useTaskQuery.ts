@@ -1,7 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { Task } from '../types/types';
 import { api } from '@/shared/api/axios-instance';
-import axios from 'axios';
 import { useTaskType } from './useTaskType';
 
 interface UseTaskQueryOptions {
@@ -15,38 +14,7 @@ export const useTaskQuery = ({ id, enabled = true, fetchMdFile = false }: UseTas
     queryKey: ['task', id, { fetchMdFile }],
     queryFn: async () => {
       const { data } = await api.get<Task>(`/npa/analytics/${id}/`);
-      if (fetchMdFile && data.file) {
-        try {
-          console.log('Пытаемся получить файл:', data.file);
-
-          const mdResponse = await axios.get(data.file, {
-            responseType: 'text',
-            withCredentials: false,
-            timeout: 30000
-          });
-
-          const mdContent = mdResponse.data;
-          console.log('MD файл успешно получен, длина:', mdContent.length);
-
-          return {
-            ...data,
-            mdContent
-          };
-        } catch (error: any) {
-          console.error('Детальная ошибка при получении MD файла:', {
-            message: error.message,
-            status: error.response?.status,
-            statusText: error.response?.statusText,
-            url: data.file
-          });
-
-          return {
-            ...data,
-            mdError: `Не удалось загрузить файл: ${data.file}. Ошибка: ${error.message}`
-          };
-        }
-      }
-
+      // The file field now contains the markdown text directly
       return data;
     },
     enabled

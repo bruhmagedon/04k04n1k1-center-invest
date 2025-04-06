@@ -14,6 +14,7 @@ export interface Task {
   id: number;
   name: string;
   file: string;
+  text: string;
   user: User;
   updated_at: string;
   created_at: string;

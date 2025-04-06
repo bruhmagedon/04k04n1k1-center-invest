@@ -57,7 +57,9 @@ export function RegisterForm({ onSuccess, triggerValue, onModalClose }: Register
       return;
     }
 
-    mutate(data, {
+    const { confirmPassword, ...otherData } = data;
+
+    mutate(otherData, {
       onSuccess: () => {
         form.reset();
         toast.success('Успешная регистрация');

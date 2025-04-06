@@ -27,14 +27,14 @@ export default defineConfig({
     host: '0.0.0.0', // Разрешает подключение со всех IP
     port: 1337,
     cors: true,
-    strictPort: true, // Запрещает автоматический выбор порта
-    proxy: {
-      '/media': {
-        target: 'http://api-rnd.techgiants.ru',
-        changeOrigin: true,
-        secure: false
-      }
-    }
+    strictPort: true // Запрещает автоматический выбор порта
+    // proxy: {
+    //   '/media': {
+    //     target: 'http://api-rnd.techgiants.ru',
+    //     changeOrigin: true,
+    //     secure: false
+    //   }
+    // }
   },
   preview: {
     port: 7000

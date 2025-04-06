@@ -9,15 +9,14 @@ interface UseTasksQueryOptions {
 
 export const useTasksQuery = (options: UseTasksQueryOptions = {}) => {
   const { searchTerm = '', enabled = true } = options;
-  
-  return useQuery<TasksResponse>({
-    queryKey: ['tasks', searchTerm], 
-    queryFn: async () => {
 
-      const endpoint = searchTerm 
+  return useQuery<TasksResponse>({
+    queryKey: ['tasks', searchTerm],
+    queryFn: async () => {
+      const endpoint = searchTerm
         ? `/npa/analytics/?search=${encodeURIComponent(searchTerm)}`
-        : '/npa/analytics/';
-        
+        : '/npa/analytics/?limit=10000';
+
       const { data } = await api.get<TasksResponse>(endpoint);
       return data;
     },
