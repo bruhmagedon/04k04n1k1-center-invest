@@ -41,13 +41,10 @@ export const useNpaData = ({ searchTerm, currentPage, pageSize, searchId }: UseN
     queryKey: ['npa-documents', searchTerm, currentPage, pageSize, searchId],
     queryFn: async () => {
       const params = new URLSearchParams({
-        limit: pageSize.toString(),
-        offset: offset.toString()
+        
       });
 
-      if (searchTerm) {
-        params.append('search', searchTerm);
-      }
+    
 
       if (searchId) {
         params.append('search_id', searchId.toString());
