@@ -28,6 +28,7 @@ interface NpaSearchResponse {
 const SEARCH_ID_KEY = 'npa_search_id';
 const TASK_ID_KEY = 'npa_task_id';
 const SEARCH_COMPLETE_KEY = 'npa_search_complete';
+const RESULTS_FETCHED_KEY = 'npa_results_fetched'; // Add this new key
 
 export const useSearchNpaMutation = () => {
   const queryClient = useQueryClient();
@@ -40,6 +41,10 @@ export const useSearchNpaMutation = () => {
   const { accessToken } = useTokenStore();
   const [taskId, setTaskId] = useState<string | null>(() => {
     return localStorage.getItem(TASK_ID_KEY);
+  });
+  // Add a state to track if results have been fetched for the current search
+  const [resultsFetched, setResultsFetched] = useState<boolean>(() => {
+    return localStorage.getItem(RESULTS_FETCHED_KEY) === 'true';
   });
 
   useEffect(() => {
@@ -62,31 +67,33 @@ export const useSearchNpaMutation = () => {
     }
   }, [taskId]);
 
+
+  useEffect(() => {
+    localStorage.setItem(RESULTS_FETCHED_KEY, String(resultsFetched));
+  }, [resultsFetched]);
+
   const fetchNpaSearchResults = async (searchId: string | null) => {
     console.log(`Fetching NPA search results for search ID: ${searchId}`);
 
-    const headers: Record<string, string> = {
-      accept: 'application/json'
-    };
-
-    if (accessToken) {
-      headers['Authorization'] = `Bearer ${accessToken}`;
-    }
+   
 
     const response = await api.get<NpaSearchResponse>(
-      `/npa/documents/?ordering=-related_tags_count&search_id=${searchId}`,
-      { headers }
+      `/npa/documents/?limit=100&ordering=-related_tags_count&search_id=${searchId}`,
+      
     );
-
+  
     if (response.status >= 400) {
       throw new Error('Ошибка при получении результатов поиска НПА');
     }
 
     toast.success(`Обработка завершена`, { description: `Найдено ${response.data.count} НПА` });
     console.log('Search results data:', response.data);
+    
+    // Mark that results have been fetched for this search
+    setResultsFetched(true);
+    
     return response.data;
   };
-
 
   const fetchResults = async () => {
     if (!searchId) {
@@ -132,6 +139,8 @@ export const useSearchNpaMutation = () => {
     onSuccess: (data) => {
       console.log('Search ID received:', data.search_id);
 
+      // Reset the fetched flag when starting a new search
+      setResultsFetched(false);
       setSearchId(String(data.task_id));
       setSearchComplete(false);
       setTaskId(String(data.search_id));
@@ -149,6 +158,7 @@ export const useSearchNpaMutation = () => {
     refetchInterval: (data) => {
       if (searchId === 'undefined') {
         setSearchComplete(true);
+        console.log(taskId)
         setSearchId(taskId);
         queryClient.invalidateQueries({ queryKey: ['npaSearchResults', searchId] });
         return false;
@@ -167,10 +177,15 @@ export const useSearchNpaMutation = () => {
   });
 
   const resultsQuery = useQuery<NpaSearchResponse, newAxiosError>({
-    queryKey: ['npaSearchResults', searchId], 
-    queryFn: () => fetchNpaSearchResults(searchId),
-    enabled: !!searchId && searchComplete, 
+    queryKey: ['npaSearchResults', taskId], 
+    queryFn: async () => {
+        await new Promise(resolve => setTimeout(resolve, 15000));
+        return fetchNpaSearchResults(taskId);
+      },
+    // Only enable the query if we haven't fetched results yet for this search
+    enabled: !!taskId && searchComplete && !resultsFetched, 
     staleTime: 5 * 60 * 1000,
+    
 
     //@ts-ignore
     onError: (error) => {
@@ -180,14 +195,15 @@ export const useSearchNpaMutation = () => {
     }
   });
 
-
   const clearSearchState = () => {
     setSearchId(null);
     setSearchComplete(false);
     setTaskId(null);
+    setResultsFetched(false);
     localStorage.removeItem(SEARCH_ID_KEY);
     localStorage.removeItem(TASK_ID_KEY);
     localStorage.removeItem(SEARCH_COMPLETE_KEY);
+    localStorage.removeItem(RESULTS_FETCHED_KEY);
   };
 
   return {
@@ -197,11 +213,12 @@ export const useSearchNpaMutation = () => {
     resultsQuery,
     searchId,
     searchComplete,
+    resultsFetched, // Expose this state to components
     isLoading:
       initialSearchMutation.isPending ||
       statusQuery.isLoading ||
       statusQuery.isFetching ||
-      (searchComplete && resultsQuery.isLoading),
+      (searchComplete && !resultsFetched && resultsQuery.isLoading),
     error: initialSearchMutation.error || statusQuery.error || resultsQuery.error,
     data: resultsQuery.data,
     fetchResults,

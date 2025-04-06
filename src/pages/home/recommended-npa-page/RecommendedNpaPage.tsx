@@ -13,6 +13,8 @@ import { ExternalLink } from 'lucide-react';
 const RecommendedNpaPage = () => {
   const { id } = useParams<{ id: string }>();
   const [isRefreshing, setIsRefreshing] = useState(false);
+  // Add a state to track if we've already attempted to fetch data
+  const [fetchAttempted, setFetchAttempted] = useState(false);
   
   const {
     resultsQuery,
@@ -20,28 +22,30 @@ const RecommendedNpaPage = () => {
     error,
     searchId,
     searchComplete,
+    resultsFetched, // Get the new state
     fetchResults,
     data
   } = useSearchNpaMutation();
   
-
   console.log('NPA Page State:', { 
     searchId, 
     searchComplete, 
+    resultsFetched, // Log it for debugging
+    fetchAttempted,
     isLoading, 
     hasData: !!data,
     resultsStatus: resultsQuery.status,
     data
   });
   
-
+  // Only fetch results once when the component mounts
   useEffect(() => {
-    if (searchId && searchComplete && !data && !isLoading) {
+    if (searchId && searchComplete && !data && !isLoading && !fetchAttempted && !resultsFetched) {
+      setFetchAttempted(true);
       handleRefresh();
     }
-  }, [searchId, searchComplete, data, isLoading]);
+  }, [searchId, searchComplete, data, isLoading, fetchAttempted, resultsFetched]);
   
-
   const handleRefresh = async () => {
     setIsRefreshing(true);
     try {
