@@ -13,35 +13,28 @@ import { ExternalLink } from 'lucide-react';
 const RecommendedNpaPage = () => {
   const { id } = useParams<{ id: string }>();
   const [isRefreshing, setIsRefreshing] = useState(false);
-  
+
   // Get the search NPA hook
-  const {
-    resultsQuery,
-    isLoading,
-    error,
+  const { resultsQuery, isLoading, error, searchId, searchComplete, fetchResults, data } =
+    useSearchNpaMutation();
+
+  // Log important state for debugging
+  console.log('NPA Page State:', {
     searchId,
     searchComplete,
-    fetchResults,
-    data
-  } = useSearchNpaMutation();
-  
-  // Log important state for debugging
-  console.log('NPA Page State:', { 
-    searchId, 
-    searchComplete, 
-    isLoading, 
+    isLoading,
     hasData: !!data,
     resultsStatus: resultsQuery.status,
     data
   });
-  
+
   // Try to fetch results when the component mounts
   useEffect(() => {
     if (searchId && searchComplete && !data && !isLoading) {
       handleRefresh();
     }
   }, [searchId, searchComplete, data, isLoading]);
-  
+
   // Handle manual refresh
   const handleRefresh = async () => {
     setIsRefreshing(true);
@@ -67,23 +60,18 @@ const RecommendedNpaPage = () => {
               <h2 className='text-xl font-semibold'>Рекомендуемые НПА</h2>
               <div className='flex items-center gap-2'>
                 {searchComplete && (
-                  <Button 
-                    className='flex'
-                    onClick={handleRefresh}
-                    disabled={isRefreshing || isLoading}
-                  >
+                  <Button className='flex' onClick={handleRefresh} disabled={isRefreshing || isLoading}>
                     <div className='flex'>
-                        <RefreshCw size={16} className={isRefreshing ? 'animate-spin flex' : 'flex'} />
-                        <span className="ml-2">Обновить</span>
+                      <RefreshCw size={16} className={isRefreshing ? 'animate-spin flex' : 'flex'} />
+                      <span className='ml-2'>Обновить</span>
                     </div>
-                   
                   </Button>
                 )}
-                {data && <Badge variant="outline">{totalCount} документов</Badge>}
+                {data && <Badge variant='outline'>{totalCount} документов</Badge>}
               </div>
             </div>
-            
-            {(isLoading || isRefreshing || resultsQuery.isFetching) ? (
+
+            {isLoading || isRefreshing || resultsQuery.isFetching ? (
               <div className='space-y-4'>
                 {[1, 2, 3, 4, 5].map((i) => (
                   <Card key={i}>
@@ -102,11 +90,7 @@ const RecommendedNpaPage = () => {
               <div className='p-4 border border-destructive/20 bg-destructive/10 rounded-md text-destructive'>
                 <p>Произошла ошибка при загрузке рекомендуемых НПА</p>
                 <p className='text-sm mt-1'>{error.message}</p>
-                <Button 
-                
-                  className="mt-4"
-                  onClick={handleRefresh}
-                >
+                <Button className='mt-4' onClick={handleRefresh}>
                   Попробовать снова
                 </Button>
               </div>
@@ -118,10 +102,7 @@ const RecommendedNpaPage = () => {
             ) : !data ? (
               <div className='flex flex-col items-center justify-center h-[60vh]'>
                 <p className='mb-4'>Данные о рекомендуемых НПА не загружены</p>
-                <Button 
-                  onClick={handleRefresh}
-                  className='flex items-center gap-2'
-                >
+                <Button onClick={handleRefresh} className='flex items-center gap-2'>
                   <SearchIcon size={16} />
                   Загрузить рекомендации
                 </Button>
@@ -134,47 +115,47 @@ const RecommendedNpaPage = () => {
             ) : (
               <ScrollArea className='h-[65vh]'>
                 <div className='space-y-4 pr-4'>
-                    
                   {
                     //@ts-ignore
-                  npaResults.map((npa) => (
-                    <Card key={npa.id}>
-                      <CardHeader className='pb-2'>
-                        <CardTitle className='text-base'>{npa.name}</CardTitle>
-                        <CardDescription>ID: {npa.id}</CardDescription>
-                      </CardHeader>
-                      <CardContent>
-                        <div className='flex flex-col gap-2'>
-                          <div className='flex justify-between items-center'>
-                            <Badge variant={npa.relevance_score > 0.7 ? "default" : "secondary"}>
-                              Релевантность: {((npa.related_tags_count / npa.tags.length) * 100).toFixed(2)}%
-                            </Badge>
-                            
-                            {npa.source && (
-                              <a 
-                                href={npa.source} 
-                                target="_blank" 
-                                rel="noopener noreferrer"
-                                className={buttonVariants({
-                                  theme: 'primary',
-                                  size: 'default',
-                                  textStyle: 'normal'
-                                })}
-                              >
-                                <ExternalLink size={16} />
-                                <span>Источник</span>
-                              </a>
-                            )}
+                    npaResults.map((npa) => (
+                      <Card key={npa.id}>
+                        <CardHeader className='pb-2'>
+                          <CardTitle className='text-base'>{npa.name}</CardTitle>
+                          <CardDescription>ID: {npa.id}</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                          <div className='flex flex-col gap-2'>
+                            <div className='flex justify-between items-center'>
+                              <Badge variant={npa.relevance_score > 0.7 ? 'default' : 'secondary'}>
+                                Релевантность: {npa.related_tags_count}%
+                              </Badge>
+
+                              {npa.source && (
+                                <a
+                                  href={npa.source}
+                                  target='_blank'
+                                  rel='noopener noreferrer'
+                                  className={buttonVariants({
+                                    theme: 'primary',
+                                    size: 'default',
+                                    textStyle: 'normal'
+                                  })}
+                                >
+                                  <ExternalLink size={16} />
+                                  <span>Источник</span>
+                                </a>
+                              )}
+                            </div>
                           </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
+                        </CardContent>
+                      </Card>
+                    ))
+                  }
                 </div>
               </ScrollArea>
             )}
           </div>
-          
+
           <div className='flex items-center justify-center gap-2 mb-2 text-muted-foreground text-sm font-medium px-2'>
             <InfoIcon size={16} className='opacity-70' />
             <span>Рекомендуемые нормативно-правовые акты на основе анализа вашего документа</span>

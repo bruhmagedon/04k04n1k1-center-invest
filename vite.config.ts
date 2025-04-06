@@ -3,7 +3,6 @@ import react from '@vitejs/plugin-react-swc';
 import path from 'node:path';
 import { defineConfig } from 'vite';
 import pluginChecker from 'vite-plugin-checker';
-import { VitePWA } from 'vite-plugin-pwa';
 import tsconfigPaths from 'vite-tsconfig-paths';
 import svgrPlugin from 'vite-plugin-svgr';
 // https://vite.dev/config/
@@ -15,12 +14,6 @@ export default defineConfig({
     }),
     svgrPlugin(),
     tsconfigPaths(),
-    VitePWA({
-      registerType: 'autoUpdate',
-      workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg}']
-      }
-    }),
     pluginChecker({ typescript: true })
   ],
   build: {
