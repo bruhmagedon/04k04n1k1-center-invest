@@ -16,7 +16,7 @@ import { TabsContent } from '@radix-ui/react-tabs';
 import { useProfileUser } from '@/shared/hooks/useProfileUser';
 import { useTaskContext } from '@/app/layouts/HomeLayout/HomeLayout';
 import { useTaskQuery } from '@/modules/task/model/hooks/useTaskQuery';
-import axios from 'axios';
+import { useTaskType } from '@/modules/task/model/hooks/useTaskType';
 
 const TaskEditorPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -28,23 +28,15 @@ const TaskEditorPage = () => {
   const [isFileLoading, setIsFileLoading] = useState(false);
   const [fileError, setFileError] = useState<string | null>(null);
   const [mdContent, setMdContent] = useState<string | null>(null);
+  const [isMarkdownLoaded, setIsMarkdownLoaded] = useState(false);
+  const { isTemporary } = useTaskType();
 
-  const {
-    data: taskData,
-    isLoading: isTaskLoading,
-    error: taskError
-  } = useTaskQuery({
-    id: id || '',
-    enabled: !!id,
-    fetchMdFile: true
-  });
-
+  // Reset markdown loaded state when ID changes
   useEffect(() => {
-    if (taskData?.mdContent) {
-      setMdContent(taskData.mdContent);
-      console.log('MD file content loaded:', taskData.mdContent.substring(0, 100) + '...');
-    }
-  }, [taskData]);
+    setIsMarkdownLoaded(false);
+    setMdContent(null);
+    setFileError(null);
+  }, [id]);
 
   const editor = useCreateBlockNote({
     dictionary: ru,
@@ -55,6 +47,46 @@ const TaskEditorPage = () => {
     }
   });
 
+  const {
+    data: taskData,
+    isLoading: isTaskLoading,
+    error: taskError
+  } = useTaskQuery({
+    id: id || '',
+    enabled: !!id && !isTemporary,
+    fetchMdFile: true
+  });
+
+  // Загрузка MD-контента в редактор
+  useEffect(() => {
+    //@ts-ignore
+    if (taskData?.mdContent && editor && !isMarkdownLoaded) {
+      const loadMarkdownContent = async () => {
+        try {
+          console.log('Загрузка MD-контента в редактор...');
+          //@ts-ignore
+          const blocks = await editor.tryParseMarkdownToBlocks(taskData.mdContent);
+          editor.replaceBlocks(editor.document, blocks);
+          setIsMarkdownLoaded(true);
+          console.log('MD-контент успешно загружен в редактор');
+        } catch (error) {
+          console.error('Ошибка при загрузке MD-контента в редактор:', error);
+          setFileError('Не удалось загрузить MD-контент в редактор');
+        }
+      };
+
+      loadMarkdownContent();
+      //@ts-ignore
+      setMdContent(taskData.mdContent);
+    }
+  }, [taskData, editor, isMarkdownLoaded]);
+
+  useEffect(() => {
+    if (isTemporary) {
+      editor.removeBlocks(editor.document);
+    }
+  }, [isTemporary]);
+
   useEffect(() => {
     if (fileInputRef.current && editor) {
       setReferences(fileInputRef as React.RefObject<HTMLInputElement>, editor);
@@ -62,14 +94,9 @@ const TaskEditorPage = () => {
     }
   }, [editor, fileInputRef, id]);
 
-  // Display task data from the query instead of context when available
-  const displayTask = taskData || contextTask;
-
   return (
     <TabsContent value='Редактор'>
       <main className='flex flex-1 flex-col px-6 sm:px-16 h-full w-full items-center overflow-hidden relative'>
-        {displayTask && <h2 className='text-xl font-semibold mb-2'>{displayTask.name}</h2>}
-
         <div className='relative w-full rounded-[0.375rem] flex-1 mt-5 mb-20'>
           {isTaskLoading || isFileLoading ? (
             <div className='flex items-center justify-center h-full'>
@@ -79,11 +106,6 @@ const TaskEditorPage = () => {
           ) : taskError || fileError ? (
             <div className='flex items-center justify-center h-full text-red-500'>
               <span>{fileError || 'Ошибка при загрузке задачи'}</span>
-            </div>
-          ) : mdContent ? (
-            <div className='p-4 border rounded'>
-              <h3 className='text-lg font-medium mb-2'>Содержимое MD файла:</h3>
-              <pre className='whitespace-pre-wrap bg-gray-100 p-3 rounded'>{mdContent}</pre>
             </div>
           ) : (
             <BlockNoteView theme={theme as Theme} editor={editor} />

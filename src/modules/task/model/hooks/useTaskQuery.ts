@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Task } from '../types/types';
 import { api } from '@/shared/api/axios-instance';
 import axios from 'axios';
+import { useTaskType } from './useTaskType';
 
 interface UseTaskQueryOptions {
   id: string | number;
@@ -14,11 +15,8 @@ export const useTaskQuery = ({ id, enabled = true, fetchMdFile = false }: UseTas
     queryKey: ['task', id, { fetchMdFile }],
     queryFn: async () => {
       const { data } = await api.get<Task>(`/npa/analytics/${id}/`);
-
       if (fetchMdFile && data.file) {
         try {
-          // Используем обычный axios вместо вашего api-инстанса
-          // Это позволит избежать добавления baseURL к абсолютному URL
           console.log('Пытаемся получить файл:', data.file);
 
           const mdResponse = await axios.get(data.file, {

@@ -8,24 +8,39 @@ import { useProfileUser } from '@/shared/hooks/useProfileUser';
 import { cn } from '@/shared/utils/cn';
 import { useState, useEffect } from 'react';
 import { useDebounce } from '@/shared/hooks/useDebounce';
+import { toast } from 'sonner';
+import { useDeleteTaskMutation } from '@/modules/task/model/hooks/useDeleteTaskMutation';
 
 export const LeftSideBar = () => {
   const navigate = useNavigate();
   const { isAuthorized } = useProfileUser();
   const [searchTerm, setSearchTerm] = useState('');
   const debouncedSearchTerm = useDebounce(searchTerm, 500);
-  
-  // Use the debounced search term in the query
-  const { data, isLoading, isError } = useTasksQuery({ 
+  const { mutate: deleteTask, isPending: isDeleting } = useDeleteTaskMutation();
+
+  const { data, isLoading, isError } = useTasksQuery({
     enabled: isAuthorized,
-    searchTerm: debouncedSearchTerm 
+    searchTerm: debouncedSearchTerm
   });
 
   const tasks = data?.results || [];
 
   const handleTaskClick = (taskId: number) => {
-    // Navigate to the editor route as defined in routesConfig
     navigate(`/task/${taskId}/editor`);
+  };
+
+  const handleDeleteTask = (taskId: number, taskName: string) => {
+    if (window.confirm(`Вы уверены, что хотите удалить задание "${taskName}"?`)) {
+      deleteTask(taskId, {
+        onSuccess: () => {
+          toast.success('Задание успешно удалено');
+        },
+        onError: (error) => {
+          console.error('Ошибка при удалении задания:', error);
+          toast.error('Не удалось удалить задание');
+        }
+      });
+    }
   };
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -44,7 +59,7 @@ export const LeftSideBar = () => {
       </div>
       <div className='px-2.5 relative'>
         {isAuthorized && (
-          <div className="relative">
+          <div className='relative'>
             <input
               placeholder='Поиск'
               className='w-full pl-12.5 py-4 placeholder:font-medium font-medium pr-10 h-12 border-b-1 border-border rounded-none focus:outline-none'
@@ -52,15 +67,11 @@ export const LeftSideBar = () => {
               value={searchTerm}
               onChange={handleSearchChange}
             />
-            <Search
-              className='absolute top-3.5 left-5 cursor-pointer'
-              size={20}
-              strokeWidth={2.5}
-            />
+            <Search className='absolute top-3.5 left-5 cursor-pointer' size={20} strokeWidth={2.5} />
             {searchTerm && (
-              <button 
+              <button
                 onClick={clearSearch}
-                className="absolute right-3 top-3.5 text-gray-400 hover:text-white transition-colors"
+                className='absolute right-3 top-3.5 text-gray-400 hover:text-white transition-colors'
               >
                 <X size={18} />
               </button>
@@ -81,8 +92,11 @@ export const LeftSideBar = () => {
         ) : tasks.length > 0 ? (
           <>
             {tasks.map((task) => (
-              <div key={task.id} onClick={() => handleTaskClick(task.id)}>
-                <SidebarItem>
+              <div key={task.id}>
+                <SidebarItem
+                  onItemClick={() => handleTaskClick(task.id)}
+                  onDelete={() => handleDeleteTask(task.id, task.name)}
+                >
                   <div className='flex flex-col w-full'>
                     <div className='font-medium truncate'>{task.name}</div>
                     <div className='text-xs text-gray-400 mt-1'>{formatDate(new Date(task.created_at))}</div>
@@ -98,12 +112,11 @@ export const LeftSideBar = () => {
               {searchTerm ? 'Ничего не найдено' : 'Нет доступных заданий'}
             </p>
             <p className='text-sm mt-1'>
-              {searchTerm 
-                ? 'Попробуйте изменить поисковый запрос' 
+              {searchTerm
+                ? 'Попробуйте изменить поисковый запрос'
                 : isAuthorized
                   ? 'Создайте техническое задание'
-                  : 'Авторизуйтесь для создания технических заданий'
-              }
+                  : 'Авторизуйтесь для создания технических заданий'}
             </p>
           </div>
         )}
