@@ -147,7 +147,7 @@ const RecommendedNpaPage = () => {
                         <div className='flex flex-col gap-2'>
                           <div className='flex justify-between items-center'>
                             <Badge variant={npa.relevance_score > 0.7 ? "default" : "secondary"}>
-                              Релевантность: {((npa.related_tags_count / npa.tags.length) * 100).toFixed(2)}%
+                              Релевантность: {npa.related_tags_count}%
                             </Badge>
                             
                             {npa.source && (
