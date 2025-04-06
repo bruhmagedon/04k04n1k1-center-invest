@@ -17,6 +17,7 @@ import { useProfileUser } from '@/shared/hooks/useProfileUser';
 import { useTaskContext } from '@/app/layouts/HomeLayout/HomeLayout';
 import { useTaskQuery } from '@/modules/task/model/hooks/useTaskQuery';
 import { useTaskType } from '@/modules/task/model/hooks/useTaskType';
+import { Button } from '@/shared/ui/button';
 
 const TaskEditorPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -99,7 +100,7 @@ const TaskEditorPage = () => {
       <main className='flex flex-1 flex-col px-6 sm:px-16 h-full w-full items-center overflow-hidden relative'>
         <div className='relative w-full rounded-[0.375rem] flex-1 mt-5 mb-20'>
           {isTaskLoading || isFileLoading ? (
-            <div className='flex items-center justify-center h-full'>
+            <div className='flex items-center justify-center h-[700px]'>
               <Loader2 className='animate-spin mr-2' size={24} />
               <span>Загрузка содержимого файла...</span>
             </div>
@@ -111,7 +112,7 @@ const TaskEditorPage = () => {
             <BlockNoteView theme={theme as Theme} editor={editor} />
           )}
 
-          {isAuthorized && (
+          {isAuthorized && isTemporary && (
             <div className='flex items-center justify-center gap-2 mb-2 text-muted-foreground text-sm font-medium px-2'>
               <InfoIcon size={16} className='opacity-70' />
               <span>

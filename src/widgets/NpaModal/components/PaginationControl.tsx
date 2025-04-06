@@ -39,14 +39,16 @@ export function PaginationControl({
       <PaginationContent>
         <PaginationItem>
           <PaginationPrevious
-            onClick={() => onPageChange(currentPage - 1)}
+            onClick={() => currentPage > 1 && onPageChange(currentPage - 1)}
+            className={currentPage === 1 ? 'pointer-events-none opacity-50' : ''}
             aria-disabled={currentPage === 1}
           />
         </PaginationItem>
         {pages}
         <PaginationItem>
           <PaginationNext
-            onClick={() => onPageChange(currentPage + 1)}
+            onClick={() => currentPage < totalPages && onPageChange(currentPage + 1)}
+            className={currentPage === totalPages ? 'pointer-events-none opacity-50' : ''}
             aria-disabled={currentPage === totalPages}
           />
         </PaginationItem>

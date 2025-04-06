@@ -12,8 +12,7 @@ import { AllDialog } from '@/widgets/AuthDialog/OurDialog';
 import { NpaSearch } from '@/widgets/NpaModal/components/NpaSearch';
 import { NpaList } from '@/widgets/NpaModal/components/NpaList';
 import { useNpaData } from '@/widgets/NpaModal/components/useNpaData';
-import { useProfileUser } from '@/shared/hooks/useProfileUser';
-import { useLogout } from '@/shared/hooks/useLogout';
+import { Loader2 } from 'lucide-react';
 
 const MAX_SELECTION = 10;
 const PAGE_SIZE = 10;
@@ -25,16 +24,22 @@ const FormSchema = z.object({
     .refine((v) => v.length <= MAX_SELECTION, `Максимум ${MAX_SELECTION} НПА`)
 });
 
-export function NpaModal() {
+export function NpaModal({
+  onSubmitNpa,
+  taskId
+}: {
+  onSubmitNpa?: (npaIds: string[]) => void;
+  taskId?: number;
+}) {
   const [currentPage, setCurrentPage] = useState(1);
-
   const [searchTerm, setSearchTerm] = useState('');
   const [isOpen, setIsOpen] = useState(false);
 
-  const { totalPages, paginatedItems } = useNpaData({
+  const { totalPages, paginatedItems, isLoading, error } = useNpaData({
     searchTerm,
     currentPage,
-    pageSize: PAGE_SIZE
+    pageSize: PAGE_SIZE,
+    searchId: taskId
   });
 
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -43,13 +48,18 @@ export function NpaModal() {
   });
 
   const selectedCount = Math.min(form.watch('items')?.length || 0, MAX_SELECTION);
-  const isEmptyList = paginatedItems.length === 0;
+  const isEmptyList = !isLoading && paginatedItems.length === 0;
 
   const handleSubmit = (data: z.infer<typeof FormSchema>) => {
     if (data.items.length > MAX_SELECTION) {
       toast.error(`Максимально можно выбрать ${MAX_SELECTION} НПА`);
       return;
     }
+
+    if (onSubmitNpa) {
+      onSubmitNpa(data.items);
+    }
+
     toast.success(`Выбрано ${data.items.length} НПА`);
     setIsOpen(false);
   };
@@ -60,10 +70,21 @@ export function NpaModal() {
         <NpaSearch searchTerm={searchTerm} onSearchChange={setSearchTerm} />
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleSubmit)} className='space-y-4'>
-            <NpaList items={paginatedItems} form={form} maxSelection={MAX_SELECTION} />
+            {isLoading ? (
+              <div className='flex justify-center items-center py-10 h-[200px]'>
+                <Loader2 className='animate-spin mr-2' size={24} />
+                <span>Загрузка нормативно-правовых актов...</span>
+              </div>
+            ) : error ? (
+              <div className='text-center text-red-500 py-10'>
+                Ошибка при загрузке нормативно-правовых актов. Пожалуйста, попробуйте позже.
+              </div>
+            ) : (
+              <NpaList items={paginatedItems} form={form} maxSelection={MAX_SELECTION} />
+            )}
 
             <div className='bottom-0 pt-4'>
-              {!isEmptyList && (
+              {!isEmptyList && !isLoading && !error && (
                 <PaginationControl
                   currentPage={currentPage}
                   totalPages={totalPages}
@@ -72,7 +93,7 @@ export function NpaModal() {
               )}
               <Button
                 type='submit'
-                disabled={form.watch('items')?.length > MAX_SELECTION || isEmptyList}
+                disabled={form.watch('items')?.length > MAX_SELECTION || isEmptyList || isLoading || !!error}
                 className='mt-2.5 w-full'
               >
                 Подтвердить выбор ({selectedCount})

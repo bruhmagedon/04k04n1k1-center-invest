@@ -1,4 +1,6 @@
 import { useMemo } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { api } from '@/shared/api/axios-instance';
 
 interface UseNpaDataParams {
   searchTerm: string;
@@ -6,34 +8,65 @@ interface UseNpaDataParams {
   pageSize: number;
 }
 
-export const useNpaData = ({ searchTerm, currentPage, pageSize }: UseNpaDataParams) => {
-  const allNpaItems = useMemo(
-    () =>
-      Array.from({ length: 200 }, (_, i) => ({
-        id: `npa-${i + 1}`,
-        label: `${categories[i % categories.length]} № ${(i + 1).toString().padStart(3, '0')}`,
-        category: categories[i % categories.length]
-      })),
-    []
-  );
+export interface NpaDocument {
+  id: number;
+  name: string;
+  file: string;
+  tags: {
+    id: number;
+    name: string;
+  }[];
+  source: string;
+  related_tags_count: number;
+}
 
-  const filteredItems = useMemo(
-    () =>
-      allNpaItems.filter(
-        (item) =>
-          item.label.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          item.category.toLowerCase().includes(searchTerm.toLowerCase())
-      ),
-    [allNpaItems, searchTerm]
-  );
+interface NpaResponse {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: NpaDocument[];
+}
 
-  const totalPages = Math.ceil(filteredItems.length / pageSize);
-  const paginatedItems = useMemo(
-    () => filteredItems.slice((currentPage - 1) * pageSize, currentPage * pageSize),
-    [filteredItems, currentPage, pageSize]
-  );
+interface UseNpaDataProps {
+  searchTerm: string;
+  currentPage: number;
+  pageSize: number;
+  searchId?: number;
+}
 
-  return { filteredItems, totalPages, paginatedItems };
+export const useNpaData = ({ searchTerm, currentPage, pageSize, searchId }: UseNpaDataProps) => {
+  const offset = (currentPage - 1) * pageSize;
+
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['npa-documents', searchTerm, currentPage, pageSize, searchId],
+    queryFn: async () => {
+      const params = new URLSearchParams({
+        limit: pageSize.toString(),
+        offset: offset.toString()
+      });
+
+      if (searchTerm) {
+        params.append('search', searchTerm);
+      }
+
+      if (searchId) {
+        params.append('search_id', searchId.toString());
+      }
+
+      const response = await api.get<NpaResponse>(`/npa/documents/?${params.toString()}`);
+      return response.data;
+    }
+  });
+
+  const totalItems = data?.count || 0;
+  const totalPages = Math.ceil(totalItems / pageSize);
+  const paginatedItems = data?.results || [];
+
+  return {
+    paginatedItems,
+    totalPages,
+    totalItems,
+    isLoading,
+    error
+  };
 };
-
-const categories = ['Федеральные законы', 'Постановления', 'СанПиНы', 'ГОСТы'];
