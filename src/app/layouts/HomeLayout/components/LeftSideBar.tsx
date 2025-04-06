@@ -10,6 +10,16 @@ import { useState, useEffect } from 'react';
 import { useDebounce } from '@/shared/hooks/useDebounce';
 import { toast } from 'sonner';
 import { useDeleteTaskMutation } from '@/modules/task/model/hooks/useDeleteTaskMutation';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle
+} from '@/shared/ui/alert-dialog';
 
 export const LeftSideBar = () => {
   const navigate = useNavigate();
@@ -17,6 +27,10 @@ export const LeftSideBar = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const debouncedSearchTerm = useDebounce(searchTerm, 500);
   const { mutate: deleteTask, isPending: isDeleting } = useDeleteTaskMutation();
+
+  // State for delete confirmation dialog
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [taskToDelete, setTaskToDelete] = useState<{ id: number; name: string } | null>(null);
 
   const { data, isLoading, isError } = useTasksQuery({
     enabled: isAuthorized,
@@ -30,17 +44,27 @@ export const LeftSideBar = () => {
   };
 
   const handleDeleteTask = (taskId: number, taskName: string) => {
-    if (window.confirm(`Вы уверены, что хотите удалить задание "${taskName}"?`)) {
-      deleteTask(taskId, {
-        onSuccess: () => {
-          toast.success('Задание успешно удалено');
-        },
-        onError: (error) => {
-          console.error('Ошибка при удалении задания:', error);
-          toast.error('Не удалось удалить задание');
-        }
-      });
-    }
+    // Set the task to delete and open the dialog
+    setTaskToDelete({ id: taskId, name: taskName });
+    setDeleteDialogOpen(true);
+  };
+
+  const confirmDelete = () => {
+    if (!taskToDelete) return;
+
+    deleteTask(taskToDelete.id, {
+      onSuccess: () => {
+        toast.success('Задание успешно удалено');
+        setDeleteDialogOpen(false);
+        setTaskToDelete(null);
+      },
+      onError: (error) => {
+        console.error('Ошибка при удалении задания:', error);
+        toast.error('Не удалось удалить задание');
+        setDeleteDialogOpen(false);
+        setTaskToDelete(null);
+      }
+    });
   };
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -52,75 +76,102 @@ export const LeftSideBar = () => {
   };
 
   return (
-    <div className='bg-[#232325cc]/75 text-white min-w-[17.5rem] rounded-tl-xl overflow-hidden flex flex-col w-[20%]'>
-      <div className='min-h-(--header-height) py-2.5 px-5 flex gap-2.5 items-center text-[1.55rem] border-b border-red font-bold'>
-        <CenterInvestLogo />
-        <span>Центр инвест</span>
-      </div>
-      <div className='px-2.5 relative'>
-        {isAuthorized && (
-          <div className='relative'>
-            <input
-              placeholder='Поиск'
-              className='w-full pl-12.5 py-4 placeholder:font-medium font-medium pr-10 h-12 border-b-1 border-border rounded-none focus:outline-none'
-              type='text'
-              value={searchTerm}
-              onChange={handleSearchChange}
-            />
-            <Search className='absolute top-3.5 left-5 cursor-pointer' size={20} strokeWidth={2.5} />
-            {searchTerm && (
-              <button
-                onClick={clearSearch}
-                className='absolute right-3 top-3.5 text-gray-400 hover:text-white transition-colors'
-              >
-                <X size={18} />
-              </button>
-            )}
-          </div>
-        )}
-      </div>
-      <div className='px-2.5 mt-2.5 pb-2.5 flex flex-col gap-1 w-full overflow-y-auto'>
-        {isLoading ? (
-          <div className='flex justify-center items-center py-10'>
-            <Loader2 className='animate-spin' size={24} />
-          </div>
-        ) : isError ? (
-          <div className='flex flex-col items-center mt-[30%] justify-center py-10 text-center text-gray-400'>
-            <p className='text-lg font-medium'>Ошибка загрузки заданий</p>
-            <p className='text-sm mt-1'>Попробуйте обновить страницу</p>
-          </div>
-        ) : tasks.length > 0 ? (
-          <>
-            {tasks.map((task) => (
-              <div key={task.id}>
-                <SidebarItem
-                  onItemClick={() => handleTaskClick(task.id)}
-                  onDelete={() => handleDeleteTask(task.id, task.name)}
+    <>
+      <div className='bg-[#232325cc]/75 text-white min-w-[17.5rem] rounded-tl-xl overflow-hidden flex flex-col w-[20%]'>
+        <div className='min-h-(--header-height) py-2.5 px-5 flex gap-2.5 items-center text-[1.55rem] border-b border-red font-bold'>
+          <CenterInvestLogo />
+          <span>Центр инвест</span>
+        </div>
+        <div className='px-2.5 relative'>
+          {isAuthorized && (
+            <div className='relative'>
+              <input
+                placeholder='Поиск'
+                className='w-full pl-12.5 py-4 placeholder:font-medium font-medium pr-10 h-12 border-b-1 border-border rounded-none focus:outline-none'
+                type='text'
+                value={searchTerm}
+                onChange={handleSearchChange}
+              />
+              <Search className='absolute top-3.5 left-5 cursor-pointer' size={20} strokeWidth={2.5} />
+              {searchTerm && (
+                <button
+                  onClick={clearSearch}
+                  className='absolute right-3 top-3.5 text-gray-400 hover:text-white transition-colors'
                 >
-                  <div className='flex flex-col w-full'>
-                    <div className='font-medium truncate'>{task.name}</div>
-                    <div className='text-xs text-gray-400 mt-1'>{formatDate(new Date(task.created_at))}</div>
-                  </div>
-                </SidebarItem>
-              </div>
-            ))}
-          </>
-        ) : (
-          <div className='flex flex-col items-center mt-[65%] justify-center py-10 text-center text-gray-400'>
-            <FileQuestion size={48} className='mb-3 opacity-50' />
-            <p className='text-lg font-medium'>
-              {searchTerm ? 'Ничего не найдено' : 'Нет доступных заданий'}
-            </p>
-            <p className='text-sm mt-1'>
-              {searchTerm
-                ? 'Попробуйте изменить поисковый запрос'
-                : isAuthorized
-                  ? 'Создайте техническое задание'
-                  : 'Авторизуйтесь для создания технических заданий'}
-            </p>
-          </div>
-        )}
+                  <X size={18} />
+                </button>
+              )}
+            </div>
+          )}
+        </div>
+        <div className='px-2.5 mt-2.5 pb-2.5 flex flex-col gap-1 w-full overflow-y-auto'>
+          {isLoading ? (
+            <div className='flex justify-center items-center py-10'>
+              <Loader2 className='animate-spin' size={24} />
+            </div>
+          ) : isError ? (
+            <div className='flex flex-col items-center mt-[30%] justify-center py-10 text-center text-gray-400'>
+              <p className='text-lg font-medium'>Ошибка загрузки заданий</p>
+              <p className='text-sm mt-1'>Попробуйте обновить страницу</p>
+            </div>
+          ) : tasks.length > 0 ? (
+            <>
+              {tasks.map((task) => (
+                <div key={task.id}>
+                  <SidebarItem
+                    onItemClick={() => handleTaskClick(task.id)}
+                    onDelete={() => handleDeleteTask(task.id, task.name)}
+                  >
+                    <div className='flex flex-col w-full'>
+                      <div className='font-medium truncate'>{task.name}</div>
+                      <div className='text-xs text-gray-400 mt-1'>
+                        {formatDate(new Date(task.created_at))}
+                      </div>
+                    </div>
+                  </SidebarItem>
+                </div>
+              ))}
+            </>
+          ) : (
+            <div className='flex flex-col items-center mt-[65%] justify-center py-10 text-center text-gray-400'>
+              <FileQuestion size={48} className='mb-3 opacity-50' />
+              <p className='text-lg font-medium'>
+                {searchTerm ? 'Ничего не найдено' : 'Нет доступных заданий'}
+              </p>
+              <p className='text-sm mt-1'>
+                {searchTerm
+                  ? 'Попробуйте изменить поисковый запрос'
+                  : isAuthorized
+                    ? 'Создайте техническое задание'
+                    : 'Авторизуйтесь для создания технических заданий'}
+              </p>
+            </div>
+          )}
+        </div>
       </div>
-    </div>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Подтверждение удаления</AlertDialogTitle>
+            <AlertDialogDescription>
+              Вы уверены, что хотите удалить задание "
+              {taskToDelete?.name && taskToDelete.name.length > 20
+                ? `${taskToDelete.name.substring(0, 20)}...`
+                : taskToDelete?.name}
+              "? Это действие нельзя отменить.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Отмена</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDelete} disabled={isDeleting}>
+              {isDeleting ? <Loader2 className='mr-2 h-4 w-4 animate-spin' /> : null}
+              Удалить
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 };

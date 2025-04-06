@@ -6,10 +6,10 @@ export const useDeleteTaskMutation = () => {
 
   return useMutation({
     mutationFn: async (taskId: number) => {
+      // Используем относительный путь, который будет проходить через прокси
       await api.delete(`/npa/analytics/${taskId}/`);
     },
     onSuccess: () => {
-      // Инвалидируем кэш, чтобы обновить список заданий
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
     }
   });
